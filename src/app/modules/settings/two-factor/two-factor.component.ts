@@ -48,18 +48,22 @@ export class SettingsTwoFactorComponent {
         this.secret = response.secret;
         this.sendingSms = false;
       })
-      .catch(() => {
+      .catch((e) => {
         this.waitingForCheck = false;
         this.sendingSms = false;
         this.telno = null;
+        if (e.message == 'voip phones not allowed') {
+          this.error = "We don't allow voip phones. Please, try again with a different number";
+        }
         this.error = 'The phone number you entered was incorrect. Please, try again.';
       });
   }
 
   check(code: number) {
-    this.client.post('api/v1/twofactor/check/' + this.secret, {
+    this.client.post('api/v1/twofactor/check', {
       code: code,
-      telno: this.telno
+      telno: this.telno,
+      secret: this.secret,
     })
       .then((response: any) => {
         this.waitingForCheck = false;

@@ -7,6 +7,7 @@ import { CommonModule } from '../../common/common.module';
 import { LegacyModule } from '../legacy/legacy.module';
 import { ChannelsModule } from '../channels/channels.module';
 import { ModalsModule } from '../modals/modals.module';
+import { VideoChatModule } from '../videochat/videochat.module';
 
 import { GroupsCreator, GroupsListComponent, GroupsProfile } from './list.component';
 import { GroupsJoinButton } from './groups-join-button';
@@ -21,14 +22,24 @@ import { GroupsProfileConversation } from './profile/conversation/conversation.c
 import { GroupsProfileFilterSelector } from './profile/filter-selector/filter-selector.component';
 import { GroupsMembersModuleComponent } from './members/members';
 import { GroupsTileComponent } from './tile/tile.component';
+import { GroupsSidebarMarkersComponent } from './sidebar-markers/sidebar-markers.component';
 import { CommentsModule } from '../comments/comments.module';
 import { PosterModule } from '../newsfeed/poster/poster.module';
 import { HashtagsModule } from '../hashtags/hashtags.module';
+import { GroupMemberPreviews } from './profile/member-previews/member-previews.component';
 import { TextInputAutocompleteModule } from 'angular-text-input-autocomplete';
+import { CanDeactivateGroupService } from "./profile/can-deactivate/can-deactivate-group.service";
 
 const routes: Routes = [
-  { path: 'groups/profile/:guid/:filter', component: GroupsProfile },
-  { path: 'groups/profile/:guid', component: GroupsProfile },
+  { path: 'groups/profile/:guid', component: GroupsProfile, canDeactivate: [CanDeactivateGroupService], children: [
+      { path: '', redirectTo: 'feed', pathMatch: 'full' },
+      { path: 'feed/:filter', component: GroupsProfileFeed },
+      { path: 'feed', component: GroupsProfileFeed },
+      { path: 'activity', redirectTo: 'feed' },
+      { path: 'members', component: GroupsProfileMembers },
+      { path: 'requests',  component: GroupsProfileRequests },
+    ],
+  },
   { path: 'groups/create', component: GroupsCreator },
   { path: 'groups/:filter', component: GroupsListComponent },
   { path: 'groups', redirectTo: '/groups/top', pathMatch: 'full' },
@@ -48,6 +59,7 @@ const routes: Routes = [
     PosterModule,
     HashtagsModule,
     TextInputAutocompleteModule,
+    VideoChatModule,
   ],
   declarations: [
     GroupsListComponent,
@@ -65,6 +77,8 @@ const routes: Routes = [
     GroupsProfileFilterSelector,
     GroupsMembersModuleComponent,
     GroupsTileComponent,
+    GroupMemberPreviews,
+    GroupsSidebarMarkersComponent,
   ],
   exports: [
     GroupsListComponent,
@@ -80,10 +94,15 @@ const routes: Routes = [
     GroupsSettingsButton,
     GroupsProfileConversation,
     GroupsProfileFilterSelector,
-    GroupsMembersModuleComponent
+    GroupsMembersModuleComponent,
+    GroupsSidebarMarkersComponent,
   ],
   entryComponents: [
-    GroupsCard
+    GroupsCard,
+    GroupsSidebarMarkersComponent,
+  ],
+  providers: [
+    CanDeactivateGroupService
   ]
 })
 export class GroupsModule {

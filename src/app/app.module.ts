@@ -2,7 +2,6 @@ import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpModule } from '@angular/http';
 import { RouterModule } from '@angular/router';
 import { CaptchaModule } from './modules/captcha/captcha.module';
 
@@ -55,6 +54,8 @@ import { NodesMarketingModule } from './modules/nodes/nodes.module';
 import { JobsMarketingModule } from './modules/jobs/jobs.module';
 import { HelpdeskModule } from './modules/helpdesk/helpdesk.module';
 import { MobileModule } from './modules/mobile/mobile.module';
+import { CanaryModule } from './modules/canary/canary.module';
+import { HttpClientModule } from "@angular/common/http";
 
 @NgModule({
   bootstrap: [
@@ -71,7 +72,7 @@ import { MobileModule } from './modules/mobile/mobile.module';
     BrowserAnimationsModule,
     ReactiveFormsModule,
     FormsModule,
-    HttpModule,
+    HttpClientModule,
     RouterModule.forRoot(MindsAppRoutes),
     CaptchaModule,
     CommonModule,
@@ -111,6 +112,7 @@ import { MobileModule } from './modules/mobile/mobile.module';
     JobsMarketingModule,
     HelpdeskModule,
     MobileModule,
+    CanaryModule,
 
     //last due to :username route
     ChannelsModule,

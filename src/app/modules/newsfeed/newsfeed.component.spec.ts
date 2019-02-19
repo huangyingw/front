@@ -13,7 +13,7 @@ import { Upload } from '../../services/api/upload';
 import { ContextService } from '../../services/context.service';
 import { contextServiceMock } from '../../../tests/context-service-mock.spec';
 import { of } from 'rxjs';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Storage } from '../../services/storage';
 import { storageMock } from '../../../tests/storage-mock.spec';
 import { MindsTitle } from '../../services/ux/title';
@@ -42,6 +42,8 @@ describe('NewsfeedComponent', () => {
         MockComponent({ selector: 'm-tagcloud', inputs: ['options'], template: '' }),
         MockComponent({ selector: 'm-ads-boost', inputs: ['handler', 'limit'], template: '' }),
         MockComponent({ selector: 'm-topbar--hashtags', inputs: ['enabled'], outputs: ['selectionChange'], template: '' }),
+        MockComponent({ selector: 'm-suggestions__sidebar' }),
+        MockDirective({ selector: '[mIfFeature]', inputs: ['mIfFeature']}),
         NewsfeedComponent,
       ],
       imports: [RouterTestingModule, ReactiveFormsModule],
@@ -80,6 +82,7 @@ describe('NewsfeedComponent', () => {
     clientMock.response = {};
 
     sessionMock.user.admin = false;
+    sessionMock.loggedIn = true;
 
     fixture.detectChanges();
 
@@ -198,7 +201,7 @@ describe('NewsfeedComponent', () => {
 
     const copyright = fixture.debugElement.query(By.css('.m-newsfeed-footer .copyright'));
     expect(copyright).not.toBeNull();
-    expect(copyright.nativeElement.textContent).toContain('© Minds 2018');
+    expect(copyright.nativeElement.textContent).toContain('© Minds 2019');
 
   });
 

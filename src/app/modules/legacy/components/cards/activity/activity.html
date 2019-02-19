@@ -11,7 +11,7 @@
 
   <div class="body">
     <a [routerLink]="['/', activity.ownerObj.username]">
-      <strong>{{activity.ownerObj.name}}</strong>
+      <strong title={{activity.ownerObj.name}}>{{activity.ownerObj.name}}</strong>
       <m-channel--badges class="m-channel--badges-activity" [user]="activity.ownerObj" badges="[ 'verified' ]"></m-channel--badges>
     </a>
     <a *ngIf="activity.containerObj && activity.containerObj.type == 'group'"
@@ -205,16 +205,39 @@
   </div>
 </div>
 
-<minds-comments  *ngIf="commentsToggle" [object]="activity" [focusOnInit]="true"></minds-comments>
+<minds-comments 
+  *ngIf="commentsToggle"
+  [object]="activity"
+  [focusOnInit]="true"
+  [focusedCommentGuid]="focusedCommentGuid"
+  [canEdit]="canDelete"
+  >
+</minds-comments>
 
 <div class="m-activity--boost-notice mdl-card__supporting-text mdl-color--blue-grey-50" *ngIf="showBoostOptions" i18n="@@MINDS__CARDS__ACTIVITY__BOOST_NOTICE">
   Boost this post to reach more people!
 </div>
 
 <div class="mdl-card__menu mdl-color-text--blue-grey-300" #toggle *ngIf="!hideTabs">
-	<button class="mdl-button m-pin-button mdl-button--icon" (click)="togglePin()" [disabled]="session.getLoggedInUser().guid != activity.owner_guid">
-        <m-tooltip icon="turned_in" *ngIf="activity.pinned" i18n="@@MINDS__CARDS__ACTIVITY__PINNED_POST">This post is pinned</m-tooltip>
-        <m-tooltip icon="turned_in_not" *ngIf="session.getLoggedInUser().guid == activity.owner_guid && !activity.pinned" i18n="@@MINDS__CARDS__ACTIVITY__CLICK_TO_PIN">Click to pin this post to the top of your channel feed</m-tooltip>
+	<button
+      class="mdl-button m-pin-button mdl-button--icon"
+      (click)="togglePin()"
+      [disabled]="session.getLoggedInUser().guid != activity.owner_guid || activity.dontPin"
+    >
+      <m-tooltip
+        icon="turned_in"
+        *ngIf="activity.pinned"
+        i18n="@@MINDS__CARDS__ACTIVITY__PINNED_POST"
+        >
+        This post is pinned
+      </m-tooltip>
+      <m-tooltip
+        icon="turned_in_not"
+        *ngIf="session.getLoggedInUser().guid == activity.owner_guid && !activity.pinned && !activity.dontPin"
+        i18n="@@MINDS__CARDS__ACTIVITY__CLICK_TO_PIN"
+        >
+        Click to pin this post to the top of your channel feed
+      </m-tooltip>
     </button>
     <m-safe-toggle *ngIf="showRatingToggle && session.isAdmin()" [(entity)]="activity"></m-safe-toggle>
 	<button class="mdl-button m-translate-button mdl-button--icon" *ngIf="isTranslatable" (click)="translateToggle = true;">

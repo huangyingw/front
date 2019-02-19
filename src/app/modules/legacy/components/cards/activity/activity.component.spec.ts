@@ -254,6 +254,8 @@ export class ButtonRemindMock {
 export class MindsCommentsMock {
   @Input() object;
   @Input() focusOnInit;
+  @Input() focusedCommentGuid: string;
+  @Input() canEdit: boolean;
 }
 
 @Component({

@@ -8,7 +8,7 @@ dist
 /tests/ng-spec
 coverage
 src/main.css
-
+!.gitlab-ci.yml
 tsd_typings
 
 /.htaccess
@@ -34,3 +34,4 @@ node_modules
 # don't ignore travis config
 !/.travis.yml
 !/.drone.yml
+!/.gitlab

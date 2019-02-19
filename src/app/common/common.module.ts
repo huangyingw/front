@@ -6,6 +6,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MINDS_PIPES } from './pipes/pipes';
 
 import { TopbarComponent } from './layout/topbar/topbar.component';
+import { SidebarMarkersComponent } from './layout/sidebar/markers.component';
 import { TopbarNavigationComponent } from './layout/topbar/navigation.component';
 import { SidebarNavigationComponent } from './layout/sidebar/navigation.component';
 import { TopbarOptionsComponent } from './layout/topbar/options.component';
@@ -61,6 +62,7 @@ import { PhoneInputComponent } from './components/phone-input/phone-input.compon
 import { PhoneInputCountryComponent } from './components/phone-input/country.component';
 import { Session } from '../services/session';
 import { Client, Upload } from '../services/api';
+import { MindsHttpClient } from './api/client.service';
 import { SafeToggleComponent } from './components/safe-toggle/safe-toggle.component';
 import { NotificationsToasterComponent } from '../modules/notifications/toaster.component';
 import { ThumbsUpButton } from './components/thumbs/thumbs-up.component';
@@ -73,6 +75,11 @@ import { GraphSVG } from './components/graphs/svg';
 import { GraphPoints } from './components/graphs/points';
 import { DynamicFormComponent } from './components/forms/dynamic-form/dynamic-form.component';
 
+import { UpdateMarkersService } from './services/update-markers.service';
+import { SocketsService } from '../services/sockets';
+import { HttpClient } from "@angular/common/http";
+import { AndroidAppDownloadComponent } from "./components/android-app-download-button/button.component";
+
 @NgModule({
   imports: [
     NgCommonModule,
@@ -84,6 +91,7 @@ import { DynamicFormComponent } from './components/forms/dynamic-form/dynamic-fo
     MINDS_PIPES,
 
     TopbarComponent,
+    SidebarMarkersComponent,
     TopbarNavigationComponent,
     SidebarNavigationComponent,
     TopbarOptionsComponent,
@@ -150,6 +158,7 @@ import { DynamicFormComponent } from './components/forms/dynamic-form/dynamic-fo
     GraphSVG,
     GraphPoints,
     DynamicFormComponent,
+    AndroidAppDownloadComponent,
   ],
   exports: [
     MINDS_PIPES,
@@ -206,6 +215,8 @@ import { DynamicFormComponent } from './components/forms/dynamic-form/dynamic-fo
     CategoriesSelectedComponent,
     TreeComponent,
 
+    SidebarMarkersComponent,
+
     AnnouncementComponent,
     MindsTokenSymbolComponent,
     PhoneInputComponent,
@@ -218,14 +229,25 @@ import { DynamicFormComponent } from './components/forms/dynamic-form/dynamic-fo
     GraphPoints,
     LineGraph,
     PieGraph,
-    DynamicFormComponent
+    DynamicFormComponent,
+    AndroidAppDownloadComponent,
   ],
   providers: [
     {
       provide: AttachmentService,
       useFactory: AttachmentService._,
       deps: [Session, Client, Upload]
-    }
+    },
+    {
+      provide: UpdateMarkersService,
+      useFactory: (_http, _session, _sockets) => { return new UpdateMarkersService(_http, _session, _sockets); },
+      deps: [ MindsHttpClient, Session, SocketsService ],
+    },
+    {
+      provide: MindsHttpClient,
+      useFactory: MindsHttpClient._,
+      deps: [HttpClient]
+    },
   ],
   entryComponents: [
     NotificationsToasterComponent

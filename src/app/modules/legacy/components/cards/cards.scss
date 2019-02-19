@@ -158,18 +158,24 @@ minds-card-image, minds-card-video {
     box-sizing: border-box;
     .body{
       margin-top: 0;
+      max-width: 95%;
       a{
         overflow: hidden;
         white-space: nowrap;
-        text-overflow: ellipsis
+        text-overflow: ellipsis;
       }
 
       strong {
+        display: inline-block;
+        max-width: 100%;
+        max-width: calc(100% - 62px);
         vertical-align: middle;
         letter-spacing: 0.25px;
         font-family: 'Roboto';
         text-rendering: optimizeLegibility;
         -webkit-font-smoothing: antialiased;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       .permalink {
@@ -231,7 +237,7 @@ minds-activity.mdl-card, minds-activity, minds-activity-preview{
   width:auto;
   min-height:0;
   margin-bottom:16px;
-  border-radius:3px;
+  border-radius:6px;
   overflow:visible;
 
   .mdl-card__supporting-text{
@@ -330,19 +336,19 @@ minds-activity.mdl-card, minds-activity, minds-activity-preview{
       }
     }
     .minds-block .minds-body a {
-      span {
-        vertical-align: middle;
-        font-family: 'Roboto';
-        text-rendering: optimizeLegibility;
-        letter-spacing: 0.75px;
-        -webkit-font-smoothing: antialiased;
-        font-weight: 800;
-      }
-      .minds-comment-span {
-        top: 0;
-        font-weight: 400;
-        text-transform: uppercase;
-      }
+      //span {
+      //  vertical-align: middle;
+      //  font-family: 'Roboto';
+      //  text-rendering: optimizeLegibility;
+      //  letter-spacing: 0.75px;
+      //  -webkit-font-smoothing: antialiased;
+      //  font-weight: 800;
+      //}
+      //.minds-comment-span {
+      //  top: 0;
+      //  font-weight: 400;
+      //  text-transform: uppercase;
+      //}
     }
 
   }
