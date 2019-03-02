@@ -1,17 +1,18 @@
 FROM alpine:edge
 
 RUN apk add --no-cache \
-    chromium \
-    git \
     build-base \
+    chromium \
+    curl \
+    g++ \
+    git \
+    libsass \
     libstdc++ \
     make \
-    g++ \
+    nodejs \
+    npm \
     python \
-    curl \
-    udev \
-    nodejs=8.9.1-r0 \
-    libsass
+    udev
 
 RUN npm install -g typescript gulp @angular/cli
 
