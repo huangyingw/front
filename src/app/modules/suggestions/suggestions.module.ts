@@ -2,13 +2,15 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule as NgCommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { CommonModule } from '../../common/common.module';
 import { LegacyModule } from '../legacy/legacy.module';
 
-import { SuggestionsSidebar } from './sidebar.component';
+import { CommonModule } from '../../common/common.module';
+import { SuggestionsSidebar } from './channel/sidebar.component';
+import { GroupSuggestionsSidebarComponent } from "./groups/sidebar.component";
 
 @NgModule({
   imports: [
+    CommonModule,
     NgCommonModule,
     RouterModule,
     LegacyModule,
@@ -17,13 +19,12 @@ import { SuggestionsSidebar } from './sidebar.component';
   ],
   declarations: [
     SuggestionsSidebar,
+    GroupSuggestionsSidebarComponent,
   ],
   exports: [
     SuggestionsSidebar,
+    GroupSuggestionsSidebarComponent,
   ],
-  //entryComponents: [
-  //  SuggestedSidebar,
-  //]
 })
 export class SuggestionsModule {
 }

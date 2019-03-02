@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Client } from '../../../services/api/client';
 import { Session } from '../../../services/session';
+import { MindsTitle } from '../../../services/ux/title';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
@@ -18,7 +19,8 @@ export class QuestionsComponent implements OnInit {
     public client: Client,
     public session: Session,
     public router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private title: MindsTitle,
   ) {
   }
 
@@ -34,6 +36,7 @@ export class QuestionsComponent implements OnInit {
     try {
       const response: any = await this.client.get(`api/v2/helpdesk/questions/question/${uuid}`);
       this.question = response.question;
+      this.title.setTitle(this.question.question);
     } catch (e) {
       console.error(e);
     }
@@ -56,6 +59,17 @@ export class QuestionsComponent implements OnInit {
     } catch (e) {
       console.error(e);
       this.question[key] = !this.question[key];
+    }
+  }
+
+  async delete() {
+    try {
+      if (confirm('Are you sure to delete ' + this.question['uuid'])) {
+        await this.client.delete(`api/v2/admin/helpdesk/questions/${this.question['uuid']}`);
+        this.router.navigate(['/help']);
+      }
+    } catch (e) {
+      console.error(e);
     }
   }
 

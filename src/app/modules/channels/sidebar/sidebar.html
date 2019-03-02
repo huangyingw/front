@@ -102,6 +102,21 @@
     </a>
   </div>
 
+  <div class="m-channel__onboardingProgress"
+       *ngIf="shouldShowOnboardingProgress()"
+  >
+
+    Your profile is {{ onboardingProgress | number:'1.0-0'}}% complete
+    <div class="mdl-progress mdl-js-progress"
+         [mdlUpload]
+         [progress]="onboardingProgress"
+    ></div>
+    <div class="m-channelOnboardingProgress__buttonBar">
+      <button class="m-btn m-btn--slim m-channelOnboardingProgress__cta" (click)="showOnboarding()">Complete your profile</button>
+      <i class="material-icons m-channelOnboardingProgress__close" (click)="hideOnboardingForcefully()">close</i>
+    </div>
+  </div>
+
   <div class="m-channel--action-buttons" >
     <minds-button-subscribe [user]="user"  *ngIf="session.isLoggedIn() && session.getLoggedInUser().guid != user.guid && !user.blocked && !user.subscribed"></minds-button-subscribe>
     <m-messenger--channel-button [user]="user" *ngIf="user.subscribed && session.getLoggedInUser().guid != user.guid"></m-messenger--channel-button>
@@ -114,6 +129,7 @@
         <span [hidden]="!editing" i18n="@@M__ACTION__SAVE">Save</span>
       </button>
     </div>
+
     <minds-button-boost [object]="user" *ngIf="session.getLoggedInUser().guid == user.guid"></minds-button-boost>
     <m-channel--badges [user]="user"></m-channel--badges>
   </div>

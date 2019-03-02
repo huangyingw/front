@@ -1,10 +1,10 @@
-import { Component, ViewChild, Output, EventEmitter } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { Client, Upload } from '../../../services/api';
 import { Session } from '../../../services/session';
 import { MindsUser } from '../../../interfaces/entities';
-
-import { HashtagsSelectorComponent } from '../../hashtags/selector/selector.component';
 import { Tag } from '../../hashtags/types/tag';
+import { ChannelOnboardingService } from "../../onboarding/channel/onboarding.service";
+import { Storage } from '../../../services/storage';
 
 @Component({
   moduleId: module.id,
@@ -24,6 +24,7 @@ export class ChannelSidebar {
   errorMessage: string = '';
   amountOfTags: number = 0;
   tooManyTags: boolean = false;
+  onboardingProgress: number = -1;
 
   @Output() changeEditing = new EventEmitter<boolean>();
 
@@ -31,17 +32,51 @@ export class ChannelSidebar {
   cities: Array<any> = [];
 
   constructor(
-    public client: Client,
-    public upload: Upload,
-    public session: Session,
-  ) {}
+      public client: Client,
+      public upload: Upload,
+      public session: Session,
+      public onboardingService: ChannelOnboardingService,
+      protected storage: Storage
+  ) {
+    if (onboardingService && onboardingService.onClose)
+      onboardingService.onClose.subscribe(progress => {
+        this.onboardingProgress = -1;
+        this.checkProgress();
+      });
+  }
+
+  ngOnInit() {
+    this.checkProgress();
+  }
+
+  checkProgress() {
+    this.onboardingService.checkProgress().then(() => {
+      this.onboardingProgress = this.onboardingService.completedPercentage;
+    });
+  }
+
+  showOnboarding() {
+    this.onboardingService.onOpen.emit();
+  }
+
+  shouldShowOnboardingProgress() {
+    return this.session.isLoggedIn() &&
+      this.session.getLoggedInUser().guid === this.user.guid &&
+      !this.storage.get('onboarding_hide') &&
+      this.onboardingProgress !== -1 &&
+      this.onboardingProgress !== 100;
+  }
+
+  hideOnboardingForcefully() {
+    this.storage.set('onboarding_hide', '1');
+  }
 
   isOwner() {
     return this.session.getLoggedInUser().guid === this.user.guid;
   }
 
   toggleEditing() {
-    
+
     if (this.tooManyTags) {
       return;
     }
