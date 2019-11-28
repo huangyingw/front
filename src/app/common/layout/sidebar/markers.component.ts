@@ -1,4 +1,9 @@
-import { Component, ComponentFactoryResolver, ViewChild, HostListener } from '@angular/core';
+import {
+  Component,
+  ComponentFactoryResolver,
+  ViewChild,
+  HostListener,
+} from '@angular/core';
 
 import { Storage } from '../../../services/storage';
 import { Sidebar } from '../../../services/ui/sidebar';
@@ -8,11 +13,10 @@ import { GroupsSidebarMarkersComponent } from '../../../modules/groups/sidebar-m
 
 @Component({
   selector: 'm-sidebar--markers',
-  templateUrl: 'markers.component.html'
+  templateUrl: 'markers.component.html',
 })
 export class SidebarMarkersComponent {
-
-  @ViewChild(DynamicHostDirective) host: DynamicHostDirective;
+  @ViewChild(DynamicHostDirective, { static: true }) host: DynamicHostDirective;
 
   minds = window.Minds;
   showMarkerSidebar = false;
@@ -24,12 +28,10 @@ export class SidebarMarkersComponent {
     public session: Session,
     public storage: Storage,
     public sidebar: Sidebar,
-    private _componentFactoryResolver: ComponentFactoryResolver,
-  ) {
-  }
+    private _componentFactoryResolver: ComponentFactoryResolver
+  ) {}
 
   ngAfterViewInit() {
-
     const isLoggedIn = this.session.isLoggedIn((is: boolean) => {
       // recheck on session status change
       this.checkSidebarVisibility(is);
@@ -39,7 +41,7 @@ export class SidebarMarkersComponent {
   }
 
   checkSidebarVisibility(isLoggedIn) {
-    const showMarkerSidebar = isLoggedIn && window.innerWidth >= 900;
+    const showMarkerSidebar = isLoggedIn /*&& window.innerWidth >= 900*/;
 
     if (showMarkerSidebar === this.showMarkerSidebar) {
       return;
@@ -57,16 +59,17 @@ export class SidebarMarkersComponent {
     this.showMarkerSidebar = showMarkerSidebar;
   }
 
-  @HostListener('window:resize') detectWidth() {
-    this.checkSidebarVisibility(this.session.isLoggedIn());
-  }
+  // @HostListener('window:resize') detectWidth() {
+  //   this.checkSidebarVisibility(this.session.isLoggedIn());
+  // }
 
   createGroupsSideBar() {
-    const componentFactory = this._componentFactoryResolver.resolveComponentFactory(GroupsSidebarMarkersComponent),
+    const componentFactory = this._componentFactoryResolver.resolveComponentFactory(
+        GroupsSidebarMarkersComponent
+      ),
       viewContainerRef = this.host.viewContainerRef;
 
     this.componentRef = viewContainerRef.createComponent(componentFactory);
     this.componentInstance = this.componentRef.instance;
   }
-
 }

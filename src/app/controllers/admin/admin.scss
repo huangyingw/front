@@ -1,65 +1,23 @@
-@import "defaults";
+@import 'defaults';
 
-
-minds-admin-analytics{
-
-  .mdl-card{
-    min-height:0;
-    width:auto;
-
-    .results{
-      display:table;
-
-      .row{
-        flex:1;
-        padding:$minds-padding;
-        border-bottom:1px solid #EEE;
-
-        > label{
-         width:60%;
-         float:left;
-        }
-      }
-      .cell{
-        display:table-cell;
-        flex:1;
-        border-right:1px solid #EEE;
-        &:last-child{
-          border-right:0;
-        }
-        text-align:center;
-
-        label{
-          width:100%;
-          display:block;
-        }
-      }
-    }
-  }
-
-}
-
-
-minds-admin-boosts{
+minds-admin-boosts {
   minds-button-comment {
     display: none !important;
   }
 
-  .boost{
+  .boost {
     width: auto;
     padding: 20px;
   }
 }
 
-
-.m-admin-pages{
-
-  .m-admin-pages-path{
-    padding:$minds-padding;
+.m-admin-pages {
+  .m-admin-pages-path {
+    padding: $minds-padding;
   }
 
-  .m-admin-pages-link-path{
-    padding:$minds-padding 0;
+  .m-admin-pages-link-path {
+    padding: $minds-padding 0;
 
     .m-form-input {
       display: block;
@@ -70,10 +28,9 @@ minds-admin-boosts{
     }
   }
 
-  .m-form-actions{
-    padding:$minds-padding 0;
+  .m-form-actions {
+    padding: $minds-padding 0;
   }
-
 }
 
 .m-admin-reports {
@@ -132,10 +89,12 @@ minds-admin-boosts{
   }
 
   .m-report-meta {
-    border-bottom: 2px solid #ddd;
     width: 100%;
     padding: 16px;
     box-sizing: border-box;
+    @include m-theme() {
+      border-bottom: 2px solid themed($m-grey-100);
+    }
 
     p {
       margin: 0 0 0.35em;
@@ -148,5 +107,31 @@ minds-admin-boosts{
         text-decoration: none;
       }
     }
+  }
+}
+
+.m-admin-button--green {
+  @include m-theme() {
+    background-color: themed($m-green);
+  }
+}
+.m-admin-button--green-dark {
+  @include m-theme() {
+    background-color: themed($m-green-dark);
+  }
+}
+.m-admin-button--amber {
+  @include m-theme() {
+    background-color: themed($m-amber);
+  }
+}
+.m-admin-button--amber-dark {
+  @include m-theme() {
+    background-color: themed($m-amber-dark);
+  }
+}
+.m-admin-button--red {
+  @include m-theme() {
+    background-color: themed($m-red);
   }
 }

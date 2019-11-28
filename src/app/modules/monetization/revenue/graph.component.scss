@@ -1,25 +1,33 @@
-m-revenue--graph{
+m-revenue--graph {
   padding: 16px;
   max-width: 990px;
   display: block;
   position: relative;
-  margin:auto;
+  margin: auto;
 
-  rect{
+  rect {
     fill: transparent;
   }
-  text{
-    fill:#FFF;
-    font-family: 'Roboto';
+  text {
+    font-family: 'Roboto', Helvetica, sans-serif;
+    @include m-theme() {
+      fill: themed($m-white);
+    }
   }
-  path{
-    stroke:#FFF;
-    stroke-width:3;
+  path {
+    stroke-width: 3;
+    @include m-theme() {
+      stroke: themed($m-white);
+    }
   }
-  line{
-    stroke: rgba(255,255,255,0.3);
+  line {
+    @include m-theme() {
+      stroke: rgba(themed($m-white), 0.3);
+    }
   }
-  circle{
-    fill:#FFF;
+  circle {
+    @include m-theme() {
+      fill: themed($m-white);
+    }
   }
 }

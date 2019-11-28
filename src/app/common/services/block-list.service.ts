@@ -1,78 +1,61 @@
-import { Injectable } from "@angular/core";
-import { Client } from "../../services/api/client";
-import { Session } from "../../services/session";
-import Dexie from 'dexie';
-
-import AsyncLock from "../../helpers/async-lock";
-
-import MindsClientHttpAdapter from "../../lib/minds-sync/adapters/MindsClientHttpAdapter.js";
-import DexieStorageAdapter from "../../lib/minds-sync/adapters/DexieStorageAdapter.js";
-import BlockListSync from "../../lib/minds-sync/services/BlockListSync.js";
+import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
+import { Client } from '../../services/api/client';
+import { Session } from '../../services/session';
+import { Storage } from '../../services/storage';
 
 @Injectable()
 export class BlockListService {
-  protected syncLock = new AsyncLock();
-
-  protected blockListSync: BlockListSync;
+  blocked: BehaviorSubject<string[]>;
 
   constructor(
     protected client: Client,
     protected session: Session,
+    protected storage: Storage
   ) {
-    this.blockListSync = new BlockListSync(
-      new MindsClientHttpAdapter(this.client),
-      new DexieStorageAdapter(new Dexie('minds-block-190314')),
-    );
-
-    this.blockListSync.setUp();
-
-    // Prune on session changes
-
-    this.session.isLoggedIn((is: boolean) => {
-      if (is) {
-        this.sync();
-      } else {
-        this.prune();
-      }
-    });
+    this.blocked = new BehaviorSubject(JSON.parse(this.storage.get('blocked')));
   }
 
-  async sync() {
-    if (this.syncLock.isLocked()) {
-      return false;
-    }
+  fetch() {
+    this.client
+      .get('api/v1/block', { sync: 1, limit: 10000 })
+      .then((response: any) => {
+        if (response.guids !== this.blocked.getValue())
+          this.blocked.next(response.guids); // re-emit as we have a change
 
-    this.syncLock.lock();
-    this.blockListSync.sync();
-    this.syncLock.unlock();
+        this.storage.set('blocked', JSON.stringify(response.guids)); // save to storage
+      });
+    return this;
   }
 
-  async prune() {
-    if (this.syncLock.isLocked()) {
-      return false;
-    }
+  async sync() {}
 
-    this.syncLock.lock();
-    this.blockListSync.prune();
-    this.syncLock.unlock();
-  }
+  async prune() {}
+
+  async get() {}
 
   async getList() {
-    await this.syncLock.untilUnlocked();
-    return await this.blockListSync.getList();
+    return this.blocked.getValue();
   }
 
   async add(guid: string) {
-    await this.syncLock.untilUnlocked();
-    return await this.blockListSync.add(guid);
+    const guids = this.blocked.getValue();
+    if (guids.indexOf(guid) < 0) this.blocked.next([...guids, ...[guid]]);
+    this.storage.set('blocked', JSON.stringify(this.blocked.getValue()));
   }
 
   async remove(guid: string) {
-    await this.syncLock.untilUnlocked();
-    return await this.blockListSync.remove(guid);
+    const guids = this.blocked.getValue();
+    const index = guids.indexOf(guid);
+    if (index > -1) {
+      guids.splice(index, 1);
+    }
+
+    this.blocked.next(guids);
+    this.storage.set('blocked', JSON.stringify(this.blocked.getValue()));
   }
 
-  static _(client: Client, session: Session) {
-    return new BlockListService(client, session);
+  static _(client: Client, session: Session, storage: Storage) {
+    return new BlockListService(client, session, storage);
   }
 }

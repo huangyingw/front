@@ -1,18 +1,31 @@
-import { Component, Input, AfterViewInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  Input,
+  AfterViewInit,
+  ViewChild,
+  ElementRef,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { OverlayModalService } from '../../../services/ux/overlay-modal';
 import { Client } from '../../../services/api';
 import { Session } from '../../../services/session';
 import { REASONS } from '../../../services/list-options';
+import { EventEmitter } from '@angular/core';
 
 @Component({
   moduleId: module.id,
   selector: 'm-report--creator',
-  templateUrl: 'creator.component.html'
+  templateUrl: 'creator.component.html',
 })
-
 export class ReportCreatorComponent implements AfterViewInit {
+  subject = {
+    value: null,
+    hasMore: false,
+  };
+  subReason = {
+    value: null,
+  };
 
-  subject: number = 0;
   note: string = '';
   guid: string = '';
 
@@ -29,12 +42,18 @@ export class ReportCreatorComponent implements AfterViewInit {
     this.guid = object ? object.guid : null;
   }
 
+  _opts: any;
+
+  set opts(opts: any) {
+    this._opts = opts;
+  }
+
   constructor(
     public session: Session,
     private _changeDetectorRef: ChangeDetectorRef,
     private overlayModal: OverlayModalService,
-    private client: Client,
-  ) { }
+    private client: Client
+  ) {}
 
   ngAfterViewInit() {
     this._changeDetectorRef.detectChanges();
@@ -47,6 +66,9 @@ export class ReportCreatorComponent implements AfterViewInit {
     if (!this.subject) {
       return false;
       //throw new Error('You cannot report this.');
+    }
+    if (this.subject.hasMore && this.next && !this.subReason.value) {
+      return false;
     }
     return true;
   }
@@ -75,10 +97,17 @@ export class ReportCreatorComponent implements AfterViewInit {
     }
   }
 
-
-  onSelectionChange(item) {
-    this.subject = item.value;
+  setSubject(subject) {
+    this.subject = subject;
   }
+
+  setSubReason(reason) {
+    this.subReason = reason;
+  }
+
+  //onSelectionChange(item) {
+  //  this.subject = item.value;
+  //}
 
   close() {
     this.overlayModal.dismiss();
@@ -87,28 +116,36 @@ export class ReportCreatorComponent implements AfterViewInit {
   /**
    * Submits the report to the appropiate server endpoint using the current settings
    */
-  submit() {
-    let guid = this.guid;
-    let subject = this.subject;
-    let note = this.note;
-
-
+  async submit() {
     this.inProgress = true;
 
-    this.client.post(`api/v1/entities/report/${guid}`, { subject, note })
-      .then((response: any) => {
-        this.inProgress = false;
-        if (response.done) {
-          this.success = true;
-        } else {
-          this.overlayModal.dismiss();
-          alert('There was an error sending your report.');
-        }
-      })
-      .catch(e => {
-        this.inProgress = false;
-        //this.overlayModal.dismiss();
-        alert(e.message ? e.message : e);
+    try {
+      let response: any = await this.client.post(`api/v2/moderation/report`, {
+        entity_guid: this.guid,
+        reason_code: this.subject.value,
+        note: this.note,
+        sub_reason_code: this.subReason.value,
       });
+
+      this.inProgress = false;
+      this.success = true;
+
+      if (this.session.isAdmin()) {
+        this.close();
+      }
+
+      if (this._opts && this._opts.onReported) {
+        this._opts.onReported(
+          this.guid,
+          this.subject.value,
+          this.subReason.value
+        );
+      }
+    } catch (e) {
+      this.inProgress = false;
+      //this.overlayModal.dismiss();\
+      alert('There was an error sending your report.');
+      alert(e.message ? e.message : e);
+    }
   }
 }

@@ -1,6 +1,6 @@
-@import "defaults";
+@import 'defaults';
 
-.m-rewards--marketing-header{
+.m-rewards--marketing-header {
   background: url('<%= APP_CDN %>/assets/photos/galaxy.jpg');
   width: 100%;
   text-align: center;
@@ -9,44 +9,46 @@
   flex-direction: column;
   padding: 224px 36px;
   box-sizing: border-box;
-  position:relative;
+  position: relative;
 
   @media only screen and (max-width: 400px) {
-    padding:110px 0;
+    padding: 110px 0;
   }
 
-  h1, h3{
-    color: #FFF;
+  h1,
+  h3 {
+    font-family: 'Roboto', Helvetica, sans-serif;
 
-    font-family: 'Roboto';
-    text-shadow: 0 0 3px #333;
-
-    @media only screen and (max-width: 400px) {
-      margin:0;
+    @include m-theme() {
+      color: themed($m-white);
+      text-shadow: 0 0 3px themed($m-grey-900);
     }
-    z-index:1;
+    @media only screen and (max-width: 400px) {
+      margin: 0;
+    }
+    z-index: 1;
   }
 
-  h1{
+  h1 {
     word-spacing: 25px;
     letter-spacing: 4px;
     text-transform: uppercase;
 
     @media only screen and (max-width: 400px) {
-      font-size:30px;
+      font-size: 30px;
     }
   }
-  h3{
+  h3 {
     letter-spacing: 2px;
-    word-spacing:3px;
-    font-weight:300;
+    word-spacing: 3px;
+    font-weight: 300;
 
     @media only screen and (max-width: 400px) {
       font-size: 14px;
     }
   }
 
-  .m-rewards--marketing-action-button{
+  .m-rewards--marketing-action-button {
     margin-bottom: -80px;
     margin-top: 32px;
     button {
@@ -56,24 +58,27 @@
       height: 53px;
       padding: 0 24px;
       font-weight: 300;
-      font-family: 'Roboto';
-      color: #FFF;
+      font-family: 'Roboto', Helvetica, sans-serif;
+      @include m-theme() {
+        color: themed($m-white);
+      }
     }
-    z-index:2;
+    z-index: 2;
   }
 
-  .m-rewards--overlay{
+  .m-rewards--overlay {
     display: block;
-    background: rgba(0,0,0,0.15);
     position: absolute;
     width: 100%;
     height: 100%;
     top: 0;
     left: 0;
     z-index: 0;
+    @include m-theme() {
+      background-color: rgba(themed($m-black), 0.15);
+    }
   }
 }
-
 
 .m-rewards--rewards {
   max-width: 990px;
@@ -100,7 +105,7 @@
       font-size: 16px;
       text-transform: capitalize;
       letter-spacing: 1.25px;
-      font-family: 'Roboto';
+      font-family: 'Roboto', Helvetica, sans-serif;
     }
   }
 }
@@ -109,7 +114,6 @@
   max-width: 990px;
   margin: 32px auto;
   text-align: center;
-
 
   .mdl-cell {
     text-align: left;
@@ -121,7 +125,7 @@
       font-size: 16px;
       text-transform: capitalize;
       letter-spacing: 1.25px;
-      font-family: 'Roboto';
+      font-family: 'Roboto', Helvetica, sans-serif;
       padding: 8px;
     }
     p {
@@ -131,26 +135,30 @@
   }
 
   textarea {
-    border: 1px solid #EEE;
     padding: 16px;
-    width: 100%; 
+    width: 100%;
+    @include m-theme() {
+      border: 1px solid themed($m-grey-50);
+    }
   }
 
   select {
     padding: 8px;
     /* -webkit-appearance: none; */
     font-size: 16px;
-    margin-left: 8px;  
+    margin-left: 8px;
   }
 
   button {
-    color: #FFF !important;
     padding: 8px 16px;
     max-height: none;
     height: auto;
-    font-family: 'Roboto';
+    font-family: 'Roboto', Helvetica, sans-serif;
     letter-spacing: 2.5px;
     font-size: 16px;
     margin: 16px;
+    @include m-theme() {
+      color: themed($m-white) !important;
+    }
   }
 }

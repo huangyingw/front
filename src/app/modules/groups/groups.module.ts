@@ -9,7 +9,11 @@ import { ChannelsModule } from '../channels/channels.module';
 import { ModalsModule } from '../modals/modals.module';
 import { VideoChatModule } from '../videochat/videochat.module';
 
-import { GroupsCreator, GroupsListComponent, GroupsProfile } from './list.component';
+import {
+  GroupsCreator,
+  GroupsListComponent,
+  GroupsProfile,
+} from './list.component';
 import { GroupsJoinButton } from './groups-join-button';
 import { GroupsProfileMembersInvite } from './profile/members/invite/invite';
 import { GroupsCard } from './card/card';
@@ -17,7 +21,7 @@ import { GroupsCardUserActionsButton } from './profile/card-user-actions-button'
 import { GroupsSettingsButton } from './profile/groups-settings-button';
 import { GroupsProfileMembers } from './profile/members/members';
 import { GroupsProfileRequests } from './profile/requests/requests';
-import { GroupsProfileFeed } from './profile/feed/feed';
+import { GroupsProfileLegacyFeed } from './profile/feed/legacy';
 import { GroupsProfileConversation } from './profile/conversation/conversation.component';
 import { GroupsProfileFilterSelector } from './profile/filter-selector/filter-selector.component';
 import { GroupsMembersModuleComponent } from './members/members';
@@ -27,19 +31,27 @@ import { CommentsModule } from '../comments/comments.module';
 import { PosterModule } from '../newsfeed/poster/poster.module';
 import { HashtagsModule } from '../hashtags/hashtags.module';
 import { GroupMemberPreviews } from './profile/member-previews/member-previews.component';
-import { TextInputAutocompleteModule } from 'angular-text-input-autocomplete';
-import { CanDeactivateGroupService } from "./profile/can-deactivate/can-deactivate-group.service";
+import { CanDeactivateGroupService } from './profile/can-deactivate/can-deactivate-group.service';
+import { GroupProfileFeedComponent } from './profile/feed/feed.component';
+import { GroupProfileFeedSortedComponent } from './profile/feed/sorted.component';
+import { NewsfeedModule } from '../newsfeed/newsfeed.module';
+import { GroupsProfileReviewComponent } from './profile/review/review.component';
+import { GroupsKickModalComponent } from './kick-modal/kick-modal.component';
+import { TextInputAutocompleteModule } from '../../common/components/autocomplete';
 
 const routes: Routes = [
-  { path: 'groups/profile/:guid', component: GroupsProfile, canDeactivate: [CanDeactivateGroupService], children: [
+  {
+    path: 'groups/profile/:guid',
+    component: GroupsProfile,
+    canDeactivate: [CanDeactivateGroupService],
+    children: [
       { path: '', redirectTo: 'feed', pathMatch: 'full' },
-      { path: 'feed/:filter', component: GroupsProfileFeed },
-      { path: 'feed', component: GroupsProfileFeed },
-      { path: 'sort', redirectTo: 'sort/top', pathMatch: 'full' },
-      { path: 'sort/:algorithm', component: GroupsProfileFeed },
+      { path: 'feed/review', component: GroupsProfileReviewComponent },
+      { path: 'feed/:filter', component: GroupProfileFeedComponent },
+      { path: 'feed', component: GroupProfileFeedComponent },
       { path: 'activity', redirectTo: 'feed' },
       { path: 'members', component: GroupsProfileMembers },
-      { path: 'requests',  component: GroupsProfileRequests },
+      { path: 'requests', component: GroupsProfileRequests },
     ],
   },
   { path: 'groups/create', component: GroupsCreator },
@@ -62,6 +74,7 @@ const routes: Routes = [
     HashtagsModule,
     TextInputAutocompleteModule,
     VideoChatModule,
+    NewsfeedModule,
   ],
   declarations: [
     GroupsListComponent,
@@ -72,7 +85,9 @@ const routes: Routes = [
     GroupsCard,
     GroupsCardUserActionsButton,
     GroupsProfileMembers,
-    GroupsProfileFeed,
+    GroupProfileFeedComponent,
+    GroupProfileFeedSortedComponent,
+    GroupsProfileLegacyFeed,
     GroupsProfileRequests,
     GroupsSettingsButton,
     GroupsProfileConversation,
@@ -81,6 +96,8 @@ const routes: Routes = [
     GroupsTileComponent,
     GroupMemberPreviews,
     GroupsSidebarMarkersComponent,
+    GroupsProfileReviewComponent,
+    GroupsKickModalComponent,
   ],
   exports: [
     GroupsListComponent,
@@ -91,7 +108,7 @@ const routes: Routes = [
     GroupsCard,
     GroupsCardUserActionsButton,
     GroupsProfileMembers,
-    GroupsProfileFeed,
+    GroupsProfileLegacyFeed,
     GroupsProfileRequests,
     GroupsSettingsButton,
     GroupsProfileConversation,
@@ -99,13 +116,7 @@ const routes: Routes = [
     GroupsMembersModuleComponent,
     GroupsSidebarMarkersComponent,
   ],
-  entryComponents: [
-    GroupsCard,
-    GroupsSidebarMarkersComponent,
-  ],
-  providers: [
-    CanDeactivateGroupService
-  ]
+  entryComponents: [GroupsCard, GroupsSidebarMarkersComponent],
+  providers: [CanDeactivateGroupService],
 })
-export class GroupsModule {
-}
+export class GroupsModule {}

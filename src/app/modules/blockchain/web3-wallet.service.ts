@@ -22,16 +22,20 @@ export class Web3WalletService {
   constructor(
     protected localWallet: LocalWalletService,
     protected transactionOverlay: TransactionOverlayService
-  ) { }
+  ) {}
 
   // Wallet
 
-  async getWallets() {
+  async getWallets(forceAuthorization: boolean = false) {
     try {
       await this.ready();
 
-      if (!await this.isSameNetwork()) {
+      if (!(await this.isSameNetwork())) {
         return false;
+      }
+
+      if (forceAuthorization && window.ethereum) {
+        await window.ethereum.enable();
       }
 
       return await this.eth.accounts();
@@ -40,8 +44,10 @@ export class Web3WalletService {
     }
   }
 
-  async getCurrentWallet(): Promise<string | false> {
-    let wallets = await this.getWallets();
+  async getCurrentWallet(
+    forceAuthorization: boolean = false
+  ): Promise<string | false> {
+    let wallets = await this.getWallets(forceAuthorization);
 
     if (!wallets || !wallets.length) {
       return false;
@@ -52,7 +58,8 @@ export class Web3WalletService {
 
   async getBalance(address): Promise<string | false> {
     return new Promise<string | false>((resolve, reject) => {
-      this.eth.getBalance(address, (error, result) => {
+      if (!window.web3 && !window.web3.eth) return reject(false);
+      window.web3.eth.getBalance(address, (error, result) => {
         if (error) {
           console.log(error);
           return reject(false);
@@ -71,11 +78,18 @@ export class Web3WalletService {
     return this.local;
   }
 
+  async setupMetamask() {
+    if (await this.isLocal()) {
+      return await this.localWallet.setupMetamask();
+    }
+  }
+
   async unlock() {
     if ((await this.isLocal()) && (await this.isLocked())) {
       await this.localWallet.unlock();
     }
 
+    await this.getCurrentWallet(true);
     return !(await this.isLocked());
   }
 
@@ -88,7 +102,10 @@ export class Web3WalletService {
     }
 
     // assume main network
-    return (await callbackToPromise(window.web3.version.getNetwork) || 1) == this.config.client_network;
+    return (
+      ((await callbackToPromise(window.web3.version.getNetwork)) || 1) ==
+      this.config.client_network
+    );
   }
 
   // Bootstrap
@@ -137,7 +154,7 @@ export class Web3WalletService {
     this.EthJS = Eth;
 
     // MetaMask found
-    this.eth = new Eth(window.web3.currentProvider);
+    this.eth = new Eth(window.ethereum || window.web3.currentProvider);
     this.local = false;
   }
 
@@ -145,10 +162,13 @@ export class Web3WalletService {
     this.EthJS = Eth;
 
     // Non-metamask
-    this.eth = new Eth(new SignerProvider(this.config.network_address, {
-      signTransaction: (rawTx, cb) => this.localWallet.signTransaction(rawTx, cb),
-      accounts: cb => this.localWallet.accounts(cb)
-    }));
+    this.eth = new Eth(
+      new SignerProvider(this.config.network_address, {
+        signTransaction: (rawTx, cb) =>
+          this.localWallet.signTransaction(rawTx, cb),
+        accounts: cb => this.localWallet.accounts(cb),
+      })
+    );
     this.local = true;
   }
 
@@ -158,7 +178,14 @@ export class Web3WalletService {
 
   // Contract Methods
 
-  async sendSignedContractMethodWithValue(contract: any, method: string, params: any[], value: number | string, message: string = '', tokenDelta: number = 0): Promise<string> {
+  async sendSignedContractMethodWithValue(
+    contract: any,
+    method: string,
+    params: any[],
+    value: number | string,
+    message: string = '',
+    tokenDelta: number = 0
+  ): Promise<string> {
     let txHash;
 
     if (await this.isLocal()) {
@@ -191,13 +218,29 @@ export class Web3WalletService {
     return txHash;
   }
 
-  async sendSignedContractMethod(contract: any, method: string, params: any[], message: string = '', tokenDelta: number = 0): Promise<string> {
-    return await this.sendSignedContractMethodWithValue(contract, method, params, 0, message, tokenDelta);
+  async sendSignedContractMethod(
+    contract: any,
+    method: string,
+    params: any[],
+    message: string = '',
+    tokenDelta: number = 0
+  ): Promise<string> {
+    return await this.sendSignedContractMethodWithValue(
+      contract,
+      method,
+      params,
+      0,
+      message,
+      tokenDelta
+    );
   }
 
   // Normal Transactions
 
-  async sendTransaction(originalTxObject: any, message: string = ''): Promise<string> {
+  async sendTransaction(
+    originalTxObject: any,
+    message: string = ''
+  ): Promise<string> {
     let txHash;
 
     if (await this.isLocal()) {
@@ -234,9 +277,13 @@ export class Web3WalletService {
       return 'Private Key';
     }
 
-    if (window.web3.currentProvider.constructor.name === 'MetamaskInpageProvider') {
+    if (
+      window.web3.currentProvider.constructor.name === 'MetamaskInpageProvider'
+    ) {
       return 'Metamask';
-    } else if (window.web3.currentProvider.constructor.name === 'EthereumProvider') {
+    } else if (
+      window.web3.currentProvider.constructor.name === 'EthereumProvider'
+    ) {
       return 'Mist';
     } else if (window.web3.currentProvider.constructor.name === 'o') {
       return 'Parity';
@@ -247,7 +294,10 @@ export class Web3WalletService {
 
   // Service provider
 
-  static _(localWallet: LocalWalletService, transactionOverlay: TransactionOverlayService) {
+  static _(
+    localWallet: LocalWalletService,
+    transactionOverlay: TransactionOverlayService
+  ) {
     return new Web3WalletService(localWallet, transactionOverlay);
   }
 }

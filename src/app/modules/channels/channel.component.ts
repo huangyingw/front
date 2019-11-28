@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, SkipSelf, Injector } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { Subscription } from 'rxjs';
@@ -11,22 +11,21 @@ import { RecentService } from '../../services/ux/recent';
 
 import { MindsUser } from '../../interfaces/entities';
 import { MindsChannelResponse } from '../../interfaces/responses';
-import { ChannelFeedComponent } from './feed/feed'
 import { ContextService } from '../../services/context.service';
-import { FeaturesService } from "../../services/features.service";
-import { PosterComponent } from '../newsfeed/poster/poster.component';
+import { FeaturesService } from '../../services/features.service';
 import { Observable } from 'rxjs';
-import { DialogService } from  '../../common/services/confirm-leave-dialog.service'
-import { BlockListService } from "../../common/services/block-list.service";
+import { DialogService } from '../../common/services/confirm-leave-dialog.service';
+import { BlockListService } from '../../common/services/block-list.service';
+import { ChannelSortedComponent } from './sorted/sorted.component';
+import { ClientMetaService } from '../../common/services/client-meta.service';
 
 @Component({
   moduleId: module.id,
   selector: 'm-channel',
-  templateUrl: 'channel.component.html'
+  templateUrl: 'channel.component.html',
+  providers: [ClientMetaService],
 })
-
 export class ChannelComponent {
-
   minds = window.Minds;
   filter: any = 'feed';
   isLocked: boolean = false;
@@ -42,13 +41,7 @@ export class ChannelComponent {
   changed: boolean = false;
   paramsSubscription: Subscription;
 
-  isLegacySorting: boolean = false;
-  isSorting: boolean = false;
-  algorithm: string;
-  period: string;
-  customType: string;
-
-  @ViewChild('feed') private feed: ChannelFeedComponent;
+  @ViewChild('feed', { static: false }) private feed: ChannelSortedComponent;
 
   constructor(
     public session: Session,
@@ -63,14 +56,19 @@ export class ChannelComponent {
     private context: ContextService,
     private dialogService: DialogService,
     private blockListService: BlockListService,
-  ) { }
+    private clientMetaService: ClientMetaService,
+    @SkipSelf() injector: Injector
+  ) {
+    this.clientMetaService
+      .inherit(injector)
+      .setSource('single')
+      .setMedium('single');
+  }
 
   ngOnInit() {
     this.title.setTitle('Channel');
     this.context.set('activity');
     this.onScroll();
-
-    this.isLegacySorting = !this.features.has('top-feeds');
 
     this.paramsSubscription = this.route.params.subscribe(params => {
       let feedChanged = false;
@@ -91,42 +89,18 @@ export class ChannelComponent {
         } else {
           this.filter = params['filter'];
         }
+      } else {
+        this.filter = 'feed';
       }
 
       if (params['editToggle']) {
         this.editing = true;
       }
 
-      this.isSorting = Boolean(params['algorithm']);
-
-      if (this.isSorting) {
-        feedChanged = this.changed ||
-          this.algorithm !== params['algorithm'] ||
-          this.period !== params['period'] ||
-          this.customType !== (params['type'] || 'activities');
-
-        this.filter = 'feed';
-        this.algorithm = params['algorithm'] || 'top';
-        this.period = params['period'] || '7d';
-        this.customType = params['type'] || 'activities';
-      } else {
-        if (!this.algorithm) {
-          this.algorithm = 'latest';
-        }
-
-        if (!this.period) {
-          this.period = '7d';
-        }
-
-        if (!this.customType) {
-          this.customType = 'activities';
-        }
-      }
-
       if (this.changed) {
         this.load();
       } else if (feedChanged) {
-        console.log('reload feed with new settings')
+        console.log('reload feed with new settings');
       }
     });
   }
@@ -141,28 +115,40 @@ export class ChannelComponent {
     this.user = null;
     this.title.setTitle(this.username);
 
-    this.client.get('api/v1/channel/' + this.username, {})
+    this.client
+      .get('api/v1/channel/' + this.username, {})
       .then((data: MindsChannelResponse) => {
         if (data.status !== 'success') {
           this.error = data.message;
           return false;
         }
         this.user = data.channel;
-        if (!(this.session.getLoggedInUser() && this.session.getLoggedInUser().guid === this.user.guid)) {
+        if (
+          !(
+            this.session.getLoggedInUser() &&
+            this.session.getLoggedInUser().guid === this.user.guid
+          )
+        ) {
           this.editing = false;
         }
-        this.title.setTitle(this.user.username);
+        this.title.setTitle(`${this.user.name} (@${this.user.username})`);
 
-        this.context.set('activity', { label: `@${this.user.username} posts`, nameLabel: `@${this.user.username}`, id: this.user.guid });
+        this.context.set('activity', {
+          label: `@${this.user.username} posts`,
+          nameLabel: `@${this.user.username}`,
+          id: this.user.guid,
+        });
         if (this.session.getLoggedInUser()) {
           this.addRecent();
         }
+
+        this.clientMetaService.recordView(this.user);
       })
-      .catch((e) => {
+      .catch(e => {
         if (e.status === 0) {
           this.error = 'Sorry, there was a timeout error.';
         } else {
-          this.error = 'Sorry, the channel couldn\'t be found';
+          this.error = "Sorry, the channel couldn't be found";
           console.log('couldnt load channel', e);
         }
       });
@@ -170,6 +156,30 @@ export class ChannelComponent {
 
   isOwner() {
     return this.session.getLoggedInUser().guid === this.user.guid;
+  }
+
+  shouldShowFeeds() {
+    return (
+      ['feed', 'images', 'videos', 'blogs'].indexOf(this.filter.toLowerCase()) >
+      -1
+    );
+  }
+
+  getFeedType() {
+    if (this.filter === 'feed') {
+      return 'activities';
+    }
+
+    return this.filter;
+  }
+
+  setFeedType(type: string | null = '') {
+    const route = ['/', this.user.username];
+    if (type && type !== 'activities') {
+      route.push(type);
+    }
+
+    this.router.navigate(route);
   }
 
   toggleEditing() {
@@ -180,22 +190,19 @@ export class ChannelComponent {
   }
 
   onScroll() {
-    var listen = this.scroll.listen((view) => {
-      if (view.top > 250)
-        this.isLocked = true;
-      if (view.top < 250)
-        this.isLocked = false;
+    var listen = this.scroll.listen(view => {
+      if (view.top > 250) this.isLocked = true;
+      if (view.top < 250) this.isLocked = false;
     });
   }
 
   updateCarousels(value: any) {
-    if (!value.length)
-      return;
+    if (!value.length) return;
     for (var banner of value) {
       var options: any = { top: banner.top };
-      if (banner.guid)
-        options.guid = banner.guid;
-      this.upload.post('api/v1/channel/carousel', [banner.file], options)
+      if (banner.guid) options.guid = banner.guid;
+      this.upload
+        .post('api/v1/channel/carousel', [banner.file], options)
         .then((response: any) => {
           response.index = banner.index;
           if (!this.user.carousels) {
@@ -204,28 +211,27 @@ export class ChannelComponent {
           this.user.carousels[banner.index] = response.carousel;
         });
     }
-
   }
 
   removeCarousel(value: any) {
-    if (value.guid)
-      this.client.delete('api/v1/channel/carousel/' + value.guid);
+    if (value.guid) this.client.delete('api/v1/channel/carousel/' + value.guid);
   }
 
-  async update() {    
+  async update() {
     await this.client.post('api/v1/channel/info', this.user);
-   
+
     this.editing = false;
   }
 
   unBlock() {
     this.user.blocked = false;
-    this.client.delete('api/v1/block/' + this.user.guid, {})
+    this.client
+      .delete('api/v1/block/' + this.user.guid, {})
       .then((response: any) => {
         this.user.blocked = false;
         this.blockListService.remove(`${this.user.guid}`);
       })
-      .catch((e) => {
+      .catch(e => {
         this.user.blocked = true;
       });
   }
@@ -236,57 +242,25 @@ export class ChannelComponent {
     }
 
     this.recent
-      .store('recent', this.user, (entry) => entry.guid == this.user.guid)
+      .store('recent', this.user, entry => entry.guid == this.user.guid)
       .splice('recent', 50);
   }
 
   /**
-    * canDeactivate() 
-    * Determines whether a page can be deactivated.
-    * In this instance, a confirmation is needed  from the user 
-    * when requesting a new page if editing === true
-    *   
-    * @returns { Observable<boolean> | boolean }    
-    */
+   * canDeactivate()
+   * Determines whether a page can be deactivated.
+   * In this instance, a confirmation is needed  from the user
+   * when requesting a new page if editing === true
+   *
+   * @returns { Observable<boolean> | boolean }
+   */
   canDeactivate(): Observable<boolean> | boolean {
-    if (!this.editing) {
-      return true;
+    if (this.feed && this.feed.canDeactivate && !this.feed.canDeactivate()) {
+      return false;
     }
 
-    return this.dialogService.confirm('Discard changes?');
+    return !this.editing || this.dialogService.confirm('Discard changes?');
   }
-
-  setSort(algorithm: string, period: string | null, customType: string | null) {
-    if (algorithm === 'latest') {
-      // Cassandra listing.
-      // TODO: Remove when ElasticSearch is fully implemented
-      this.algorithm = algorithm;
-      this.period = null;
-      this.customType = null;
-
-      this.router.navigate(['/', this.username]);
-      return;
-    }
-
-    this.algorithm = algorithm;
-    this.period = period;
-    this.customType = customType;
-
-    let route: any[] = [ '/', this.username, 'sort', algorithm ];
-    const params: any = {};
-
-    if (period) {
-      params.period = period;
-    }
-
-    if (customType && customType !== 'activities') {
-      params.type = customType;
-    }
-
-    route.push(params);
-    this.router.navigate(route);
-  }
-
 }
 
 export { ChannelSubscribers } from './subscribers/subscribers';

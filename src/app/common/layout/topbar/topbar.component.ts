@@ -9,41 +9,43 @@ import { NotificationsToasterComponent } from '../../../modules/notifications/to
 @Component({
   moduleId: module.id,
   selector: 'm-topbar',
-  templateUrl: 'topbar.component.html'
+  templateUrl: 'topbar.component.html',
 })
-
 export class TopbarComponent {
-
-  @ViewChild(DynamicHostDirective) host: DynamicHostDirective;
+  @ViewChild(DynamicHostDirective, { static: true }) host: DynamicHostDirective;
 
   minds = window.Minds;
 
   componentRef;
   componentInstance: NotificationsToasterComponent;
 
-  constructor(public session: Session, public storage: Storage, public sidebar: Sidebar, private _componentFactoryResolver: ComponentFactoryResolver) {
-  }
+  constructor(
+    public session: Session,
+    public storage: Storage,
+    public sidebar: Sidebar,
+    private _componentFactoryResolver: ComponentFactoryResolver
+  ) {}
 
   ngAfterViewInit() {
     this.loadComponent();
   }
 
-	/**
-	 * Open the navigation
-	 */
+  /**
+   * Open the navigation
+   */
   openNav() {
     this.sidebar.open();
   }
 
   loadComponent() {
-    const componentFactory = this._componentFactoryResolver.resolveComponentFactory(NotificationsToasterComponent),
+    const componentFactory = this._componentFactoryResolver.resolveComponentFactory(
+        NotificationsToasterComponent
+      ),
       viewContainerRef = this.host.viewContainerRef;
 
     viewContainerRef.clear();
 
     this.componentRef = viewContainerRef.createComponent(componentFactory);
-    this.componentRef.notifications = [];
     this.componentInstance = this.componentRef.instance;
   }
-
 }

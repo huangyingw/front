@@ -6,12 +6,16 @@
   .m-ledger-amount {
     font-size: 30px;
 
-    &.positive{
-      color: green;
+    &.positive {
+      @include m-theme() {
+        color: themed($m-green-dark);
+      }
     }
 
-    &.negative{
-      color: red;
+    &.negative {
+      @include m-theme() {
+        color: themed($m-red);
+      }
     }
   }
 

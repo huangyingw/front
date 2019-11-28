@@ -5,13 +5,16 @@ import { clientMock } from '../../../tests/client-mock.spec';
 import { boostContractServiceMock } from '../../mocks/modules/blockchain/contracts/boost-contract.service.mock.spec';
 
 describe('BoostService', () => {
-
   let service: BoostService;
 
   beforeEach(() => {
     jasmine.clock().uninstall();
     jasmine.clock().install();
-    service = new BoostService(sessionMock, clientMock, boostContractServiceMock);
+    service = new BoostService(
+      sessionMock,
+      clientMock,
+      boostContractServiceMock
+    );
     clientMock.response = {};
 
     boostContractServiceMock.tx = '0xa123123';
@@ -29,10 +32,14 @@ describe('BoostService', () => {
   });
 
   it('should load boosts', fakeAsync(() => {
-    service = new BoostService(sessionMock, clientMock, boostContractServiceMock);
+    service = new BoostService(
+      sessionMock,
+      clientMock,
+      boostContractServiceMock
+    );
 
     clientMock.response['api/v2/boost/newsfeed/'] = {
-      status: 'success'
+      status: 'success',
     };
 
     service.load('newsfeed', '');
@@ -49,7 +56,7 @@ describe('BoostService', () => {
       guid: '1234',
       handler: 'p2p',
       state: 'created',
-      currency: 'usd'
+      currency: 'usd',
     };
 
     const url = 'api/v2/boost/peer/1234';
@@ -67,7 +74,7 @@ describe('BoostService', () => {
       guid: '1234',
       handler: 'p2p',
       state: 'created',
-      currency: 'tokens'
+      currency: 'tokens',
     };
 
     const url = 'api/v2/boost/peer/1234';
@@ -78,7 +85,9 @@ describe('BoostService', () => {
     expect(clientMock.put).toHaveBeenCalled();
     expect(clientMock.put.calls.mostRecent().args[0]).toBe(url);
     expect(boostContractServiceMock.accept).toHaveBeenCalled();
-    expect(boostContractServiceMock.accept.calls.mostRecent().args[0]).toBe('1234');
+    expect(boostContractServiceMock.accept.calls.mostRecent().args[0]).toBe(
+      '1234'
+    );
   }));
 
   it('should reject a p2p boost', fakeAsync(() => {
@@ -86,7 +95,7 @@ describe('BoostService', () => {
       guid: '1234',
       handler: 'p2p',
       state: 'created',
-      currency: 'tokens'
+      currency: 'tokens',
     };
 
     const url = 'api/v2/boost/peer/1234';
@@ -99,7 +108,9 @@ describe('BoostService', () => {
     expect(clientMock.delete).toHaveBeenCalled();
     expect(clientMock.delete.calls.mostRecent().args[0]).toBe(url);
     expect(boostContractServiceMock.reject).toHaveBeenCalled();
-    expect(boostContractServiceMock.reject.calls.mostRecent().args[0]).toBe('1234');
+    expect(boostContractServiceMock.reject.calls.mostRecent().args[0]).toBe(
+      '1234'
+    );
   }));
 
   it('should reject a usd p2p boost', fakeAsync(() => {
@@ -107,7 +118,7 @@ describe('BoostService', () => {
       guid: '1234',
       handler: 'p2p',
       state: 'created',
-      currency: 'usd'
+      currency: 'usd',
     };
 
     const url = 'api/v2/boost/peer/1234';
@@ -125,7 +136,8 @@ describe('BoostService', () => {
       guid: '1234',
       handler: 'newsfeed',
       state: 'created',
-      currency: 'usd'
+      currency: 'usd',
+      transactionId: 'oc',
     };
 
     const url = 'api/v2/boost/newsfeed/1234/revoke';
@@ -143,7 +155,8 @@ describe('BoostService', () => {
       guid: '1234',
       handler: 'newsfeed',
       state: 'created',
-      currency: 'tokens'
+      currency: 'tokens',
+      transactionId: '0x',
     };
 
     const url = 'api/v2/boost/newsfeed/1234/revoke';
@@ -154,7 +167,9 @@ describe('BoostService', () => {
     expect(clientMock.delete).toHaveBeenCalled();
     expect(clientMock.delete.calls.mostRecent().args[0]).toBe(url);
     expect(boostContractServiceMock.revoke).toHaveBeenCalled();
-    expect(boostContractServiceMock.revoke.calls.mostRecent().args[0]).toBe('1234');
+    expect(boostContractServiceMock.revoke.calls.mostRecent().args[0]).toBe(
+      '1234'
+    );
   }));
 
   it('should revoke a p2p usd boost', fakeAsync(() => {
@@ -162,7 +177,8 @@ describe('BoostService', () => {
       guid: '1234',
       handler: 'p2p',
       state: 'created',
-      currency: 'usd'
+      currency: 'usd',
+      transactionId: 'oc',
     };
 
     const url = 'api/v2/boost/peer/1234/revoke';
@@ -180,7 +196,8 @@ describe('BoostService', () => {
       guid: '1234',
       handler: 'p2p',
       state: 'created',
-      currency: 'tokens'
+      currency: 'tokens',
+      transactionId: '0x',
     };
 
     const url = 'api/v2/boost/peer/1234/revoke';
@@ -191,7 +208,17 @@ describe('BoostService', () => {
     expect(clientMock.delete).toHaveBeenCalled();
     expect(clientMock.delete.calls.mostRecent().args[0]).toBe(url);
     expect(boostContractServiceMock.revoke).toHaveBeenCalled();
-    expect(boostContractServiceMock.revoke.calls.mostRecent().args[0]).toBe('1234');
+    expect(boostContractServiceMock.revoke.calls.mostRecent().args[0]).toBe(
+      '1234'
+    );
   }));
 
+  it('should be able to differentiate onchain and offchain transactions', fakeAsync(() => {
+    const onChain = service.isOnChain({ transactionId: '0x0000000000' });
+    const offChain = service.isOnChain({ transactionId: 'oc' });
+
+    jasmine.clock().tick(10);
+    expect(onChain).toBeTruthy();
+    expect(offChain).toBeFalsy();
+  }));
 });

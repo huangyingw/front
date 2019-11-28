@@ -1,40 +1,44 @@
-@import "defaults";
+@import 'defaults';
 
-.minds-avatar{
+.minds-avatar {
   position: relative;
   max-width: 200px;
   margin: 8px;
   overflow: hidden;
   box-sizing: border-box;
-  background:#FFF;
-  border-radius:3px;
+  border-radius: 3px;
+  @include m-theme() {
+    background-color: themed($m-white);
+  }
 
-  img{
+  img {
     max-height: 220px;
     max-width: 100%;
     border-radius: 50%;
     flex-basis: 100%;
   }
-  .overlay{
-    color: #FFF;
-    background: rgba(0, 0, 0, 0.5);
+  .overlay {
     text-align: center;
     cursor: pointer;
     width: 100%;
     height: 100%;
     position: absolute;
     box-sizing: border-box;
-    
+
     padding: 38px 8px;
     //display:flex;
     //flex-flow:row nowrap;
     //align-items: center;
-
-    i{
-      font-size:30px;
-      padding-right:8px;
+    @include m-theme() {
+      color: themed($m-white);
+      background-color: rgba(themed($m-black), 0.5);
     }
-    span{
+
+    i {
+      font-size: 30px;
+      padding-right: 8px;
+    }
+    span {
       font-weight: 400;
       display: block;
       text-transform: uppercase;
@@ -43,7 +47,7 @@
       font-family: 'Roboto', Helvetica;
     }
   }
-  input[type="file"]{
+  input[type='file'] {
     opacity: 0;
     position: absolute;
     left: 0;
@@ -54,48 +58,55 @@
   }
 }
 
-.minds-dropdown-menu{
+.minds-dropdown-menu {
   padding: 0;
   width: 150px;
-  box-shadow: 0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12);
   border-radius: 4px;
   position: absolute;
   z-index: 1000;
   top: 8px;
   right: 8px;
-  background-color: #FFF;
   overflow: visible;
   display: block;
-
-  .mdl-menu__item{
-    opacity:1;
-    text-overflow:ellipsis;
-    line-height: 32px;
-    height: 32px;
-    border-bottom: 1px solid #ececec;
-    padding: 0 8px;
+  @include m-theme() {
+    background-color: themed($m-white);
+    box-shadow: 0 2px 2px 0 rgba(themed($m-black), 0.14),
+      0 3px 1px -2px rgba(themed($m-black), 0.2),
+      0 1px 5px 0 rgba(themed($m-black), 0.12);
   }
 
+  .mdl-menu__item {
+    opacity: 1;
+    text-overflow: ellipsis;
+    line-height: 32px;
+    height: 32px;
+    @include m-theme() {
+      border-bottom: 1px solid themed($m-grey-50);
+    }
+    padding: 0 8px;
+  }
 }
 
-.m-video-banner{
-  position:relative;
+.m-video-banner {
+  position: relative;
   width: 100%;
   overflow-x: hidden;
 
-  .video{
-    height:100%;
-    width:100%;
-    background: none no-repeat left center #000000;
+  .video {
+    height: 100%;
+    width: 100%;
     background-size: cover;
-
-    video{
-      min-height:100%;
-      min-width:100%;
-      position:absolute;
-      bottom:0;
+    @include m-theme() {
+      background: none no-repeat left center themed($m-black-always);
     }
-  /*  @media (min-width: 1600px){
+
+    video {
+      min-height: 100%;
+      min-width: 100%;
+      position: absolute;
+      bottom: 0;
+    }
+    /*  @media (min-width: 1600px){
       video{
         height: auto;
         width: 100%;
@@ -107,46 +118,51 @@
     }*/
   }
 
-  .overlay{
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    position:absolute;
-    display:-webkit-flex;
-    display:flex;
-    align-items:center;
-    -webkit-align-items:center;
+  .overlay {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    display: -webkit-flex;
+    display: flex;
+    align-items: center;
+    -webkit-align-items: center;
     flex-direction: column;
-    -webkit-flex-direction:column;
-    background: linear-gradient(
-      rgba(0, 0, 0, 0.3),
-      rgba(0, 0, 0, 0.4),
-      rgba(0, 0, 0, 0)
-    );
-    color:#FFF;
+    -webkit-flex-direction: column;
+    @include m-theme() {
+      color: themed($m-white);
+      background: linear-gradient(
+        rgba(themed($m-black-always), 0.3),
+        rgba(themed($m-black-always), 0.4),
+        rgba(themed($m-black-always), 0)
+      );
+    }
 
-    &.overlay--0-6{
-      background-color:rgba(0,0,0,0.6);
+    &.overlay--0-6 {
+      @include m-theme() {
+        background-color: rgba(themed($m-black-always), 0.65);
+      }
     }
   }
 }
 
-
 /**
  * Carousel
  */
-m-channel--carousel{
+m-channel--carousel {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 360px;
   overflow: hidden;
-  background: #888;
   //z-index:-1;
+  @include m-theme() {
+    background-color: themed($m-grey-400);
+  }
 
-  minds-banner{
+  minds-banner {
     display: block;
     position: absolute;
     top: 0;
@@ -154,128 +170,151 @@ m-channel--carousel{
     width: 100%;
     height: 100%;
 
-    &.is-hidden .minds-banner{
-      opacity:0;
+    &.is-hidden .minds-banner {
+      opacity: 0;
     }
 
     &.is-hidden.edit-mode {
-      display:none;
+      display: none;
     }
 
-    .overlay{
-    //  opacity:0;
+    .overlay {
+      //  opacity:0;
     }
 
-    .minds-banner{
-      height:100%;
-      max-height:100%;
-      opacity:1;
-      transition: opacity .25s ease-in-out;
+    .minds-banner {
+      height: 100%;
+      max-height: 100%;
+      opacity: 1;
+      transition: opacity 0.25s ease-in-out;
     }
 
-    .save-bar{
-      display:none !important;
-    }
-  }
-
-  .delete-button{
-    position:absolute;
-    top:8px;
-    right:8px;
-    z-index:999;
-
-    > *{
-      font-size:11px;
+    .save-bar {
+      display: none !important;
     }
   }
 
-  .add-button{
-    display:block !important;
-    position:absolute;
-    top:8px;
-    right:80px;
-    z-index:999;
-    i{
-      margin-top:6px;
+  .delete-button > button,
+  .add-button {
+    &.mdl-button {
+      &:hover {
+        @include m-theme() {
+          background-color: themed($m-blue-grey-700);
+        }
+        cursor: pointer;
+      }
+      &:active {
+        @include m-theme() {
+          background-color: themed($m-blue-grey-600);
+        }
+      }
     }
   }
 
-  > i{
+  .delete-button {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 998;
+
+    button {
+      font-size: 23px;
+    }
+  }
+
+  .add-button {
+    display: block !important;
+    position: absolute;
+    top: 8px;
+    right: 80px;
+    z-index: 998;
+    i {
+      margin-top: 2px;
+    }
+  }
+
+  > i {
     top: 50%;
     z-index: 999;
     position: absolute;
-    color: #FFF;
     font-size: 60px !important;
     cursor: pointer;
-    text-shadow: 0 0 3px #888;
+    @include m-theme() {
+      color: themed($m-white);
+      text-shadow: 0 0 3px themed($m-grey-400);
+    }
 
-    &.right{
-      right:0;
+    &.right {
+      right: 0;
     }
   }
 
-  .placeholder{
-    background-color:#4690C3;
-    opacity:1;
+  .placeholder {
+    opacity: 1;
+    @include m-theme() {
+      background-color: themed($m-blue);
+    }
   }
- }
-
-
-.minds-card-navigation, .minds-settings-nav{
-
-  list-style: none;
-  min-height:0;
-  width:auto;
-  padding:0;
-  margin:0;
-
-  li{
-   text-align: left;
-   padding: 0;
-   margin:0;
-   cursor: pointer;
-   font-size: 14px;
-   width: auto;
-   border-bottom: 1px solid rgba(0,0,0,.12);
-
-   :hover{
-     background-color: #EEE;
-     text-decoration: none;
-   }
-
-   a{
-     display:flex;
-     padding:$minds-padding *2;
-     text-decoration: none;
-
-     i, m--crypto-token-symbol{
-       margin-right:$minds-margin;
-     }
-   }
-
- }
-
 }
 
-.m-actions-block{
-  display:flex;
-  flex-flow:row nowrap;
+.minds-card-navigation,
+.minds-settings-nav {
+  list-style: none;
+  min-height: 0;
+  width: auto;
+  padding: 0;
+  margin: 0;
+
+  li {
+    text-align: left;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    font-size: 14px;
+    width: auto;
+    @include m-theme() {
+      border-bottom: 1px solid rgba(themed($m-black), 0.12);
+    }
+
+    :hover {
+      text-decoration: none;
+      @include m-theme() {
+        background-color: themed($m-grey-50);
+      }
+    }
+
+    a {
+      display: flex;
+      padding: $minds-padding * 2;
+      text-decoration: none;
+
+      i,
+      m--crypto-token-symbol {
+        margin-right: $minds-margin;
+      }
+    }
+  }
+}
+
+.m-actions-block {
+  display: flex;
+  flex-flow: row nowrap;
   align-items: center;
 
   > * {
-    margin-right:$minds-margin;
+    margin-right: $minds-margin;
 
     i {
       vertical-align: middle;
     }
   }
 }
-.m-additional-block{
-  display:flex;
-  font-size:12px;
+.m-additional-block {
+  display: flex;
+  font-size: 12px;
 
   > * {
-    margin-right:$minds-margin;
+    margin-right: $minds-margin;
     display: flex;
     align-items: center;
 
@@ -284,7 +323,7 @@ m-channel--carousel{
     }
 
     i {
-      padding:$minds-padding;
+      padding: $minds-padding;
       vertical-align: middle;
     }
 
@@ -295,46 +334,66 @@ m-channel--carousel{
   }
 }
 
-.m-block{
-  display:flex;
-  flex-flow:row nowrap;
+.m-block {
+  display: flex;
+  flex-flow: row nowrap;
   align-items: center;
 
-  > .m-avatar{
-    img{
-      border-radius:3px;
-      min-width:40px;
+  > .m-avatar {
+    img {
+      border-radius: 3px;
+      min-width: 40px;
     }
   }
 
-  > .m-body{
-    flex:1;
-    padding:0 $minds-padding;
+  > .m-body {
+    flex: 1;
+    padding: 0 $minds-padding;
 
-    h3{
-      display:inline-block;
-      margin:0;
-      font-size:14px;
+    h3 {
+      display: inline-block;
+      margin: 0;
+      font-size: 14px;
       line-height: 16px;
-      font-weight:bold;
+      font-weight: bold;
     }
-    p{
-      margin:0;
-      font-size:11px;
+    p {
+      margin: 0;
+      font-size: 11px;
     }
   }
 }
 
-minds-button-user-dropdown{
-  .minds-dropdown-menu{
+minds-button-user-dropdown {
+  .minds-dropdown-menu {
     top: 50px;
     margin-top: 0;
     position: absolute;
     text-transform: capitalize;
   }
+
+  .m-user-dropdown__item--nsfw {
+    overflow: visible;
+
+    m-nsfw-selector {
+      border: 0;
+      width: 100%;
+      padding: 0;
+
+      .m-nsfwSelector__label {
+        m-tooltip {
+          display: none;
+        }
+      }
+
+      .m-dropdown .m-dropdown__list {
+        width: 210px;
+      }
+    }
+  }
 }
 
-.m-error-splash{
+.m-error-splash {
   text-align: center;
   text-transform: uppercase;
   padding-top: 12px;
@@ -343,38 +402,36 @@ minds-button-user-dropdown{
     margin-top: 36px;
     margin-bottom: 36px;
   }
-  h3{
+  h3 {
     margin: auto;
     font-weight: 600;
     font-size: 19px;
   }
-  span{
-
+  span {
   }
 }
 
-minds-graph-line{
+minds-graph-line {
   display: block;
   margin-bottom: 16px;
 }
 
-.graph-labels{
+.graph-labels {
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
 
-  > .graph-label{
-    flex:1;
-    text-align:center;
-    font-weight:light;
+  > .graph-label {
+    flex: 1;
+    text-align: center;
+    font-weight: light;
 
-    b{
-      display:block;
+    b {
+      display: block;
       font-size: 9px;
       text-transform: uppercase;
     }
   }
-
 }
 
 .minds-avatar-hovercard {
@@ -384,9 +441,11 @@ minds-graph-line{
   bottom: auto;
   right: auto;
   z-index: 999995;
-  background: #ffffff;
   width: 330px;
   padding-bottom: $minds-padding;
+  @include m-theme() {
+    background-color: themed($m-white);
+  }
 }
 
 .m-bubble-popup {
@@ -397,10 +456,12 @@ minds-graph-line{
 
 minds-emoji .m-bubble-popup {
   max-width: 180px + ($minds-padding * 2);
-  background: #ffffff;
   margin: $minds-padding;
   border-radius: 3px;
   user-select: none;
+  @include m-theme() {
+    background-color: themed($m-white);
+  }
 
   .m-emoji-selector-title {
     width: 100%;
@@ -410,7 +471,9 @@ minds-emoji .m-bubble-popup {
     text-transform: uppercase;
     font-size: 11px;
     font-weight: bold;
-    border-bottom: 1px solid #eaeaea;
+    @include m-theme() {
+      border-bottom: 1px solid themed($m-grey-50);
+    }
 
     .m-emoji-selector-close {
       position: absolute;
@@ -445,14 +508,19 @@ minds-emoji .m-bubble-popup {
 }
 
 minds-tooltip .m-bubble-popup {
-  background: #000000;
-  color: #ffffff;
   padding: ($minds-padding / 2) $minds-padding;
   margin: $minds-padding 0;
   font-size: 10px;
+  @include m-theme() {
+    color: themed($m-white);
+    background-color: themed($m-grey-950);
+  }
 }
 
 m-translate {
+  a {
+    cursor: pointer;
+  }
   .m-translate-select {
     cursor: pointer;
     position: relative;
@@ -479,9 +547,13 @@ m-translate {
     max-width: 100%;
     appearance: none;
     border-radius: 0;
-    border: 1px solid #ddd;
     padding: $minds-padding;
     font-size: 12px;
+    @include m-theme() {
+      border: 1px solid themed($m-grey-100);
+      background-color: themed($m-white);
+      color: rgba(themed($m-black), 0.87);
+    }
   }
 }
 
@@ -492,7 +564,9 @@ m-translate {
     width: calc(100% - #{$minds-padding * 4}) !important;
     margin: 0 ($minds-padding * 2) $minds-padding;
     padding: $minds-padding 0 $minds-padding $minds-padding;
-    border-left: 2px solid #ddd;
+    @include m-theme() {
+      border-left: 2px solid themed($m-grey-100);
+    }
 
     minds-card-comment & {
       font-size: inherit !important;
@@ -504,12 +578,14 @@ m-translate {
   list-style: none;
   padding: 0;
   margin: 0;
-  background: #ffffff;
   white-space: nowrap;
   position: absolute;
   top: 0;
   left: 0;
   z-index: 99990;
+  @include m-theme() {
+    background-color: themed($m-white);
+  }
 
   &.m-ribbon-right {
     right: 0;
@@ -578,22 +654,26 @@ m-translate {
   pointer-events: none;
 }
 
-svg.m-facebook-icon{
-  cursor:pointer;
-  background-color: #3067a3;
-  fill:#FFF;
-  margin:auto;
+svg.m-facebook-icon {
+  cursor: pointer;
+  margin: auto;
+  @include m-theme() {
+    fill: themed($m-white);
+    background-color: themed($m-facebook) !important;
+  }
 }
 
 .m--spam-notice {
   display: block;
   text-align: center;
   padding: ($minds-padding * 2);
-  background: #ffffaa;
-  color: #000000;
   font-size: 12px;
   line-height: 1.25;
   font-weight: 400;
+  @include m-theme() {
+    color: themed($m-black);
+    background-color: themed($m-amber-light);
+  }
 
   minds-newsfeed-single & {
     margin: 0 0 ($minds-padding / 2) 0;
@@ -615,7 +695,9 @@ svg.m-facebook-icon{
   align-items: center;
   justify-content: space-evenly;
   padding: $minds-padding * 2;
-  color: #4a4a4a;
+  @include m-theme() {
+    color: themed($m-grey-800);
+  }
 
   .m-tab-bar--tab {
     position: relative;
@@ -630,15 +712,18 @@ svg.m-facebook-icon{
   }
 
   .m-tab-bar--more {
-    color: rgba(74, 74, 74, 0.58);
     margin-left: 5%;
+    @include m-theme() {
+      color: rgba(themed($m-grey-800), 0.58);
+    }
   }
 
   .m-tab-bar--active-tab {
-    color: #2196f3;
+    @include m-theme() {
+      color: themed($m-blue);
+    }
   }
 }
-
 
 .m-crypto-token-icon {
   // TODO: Create an SVG version of the icon
@@ -684,13 +769,12 @@ svg.m-facebook-icon{
   visibility: hidden;
 }
 
-mwl-text-input-autocomplete-menu {
+m-text-input--autocomplete-menu {
   ul.dropdown-menu {
     position: absolute;
     top: 100%;
     left: 0;
     z-index: 1000;
-    display: none;
     float: left;
     min-width: 160px;
     padding: 5px 0;
@@ -698,36 +782,45 @@ mwl-text-input-autocomplete-menu {
     font-size: 14px;
     text-align: left;
     list-style: none;
-    background-color: #fff;
     background-clip: padding-box;
-    border: 1px solid rgba(0, 0, 0, .15);
     border-radius: 4px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
+
+    @include m-theme() {
+      background-color: themed($m-white);
+      border: 1px solid rgba(themed($m-black), 0.15);
+      box-shadow: 0 6px 12px rgba(themed($m-black), 0.175);
+    }
 
     li {
       a {
         display: block;
-        padding: 3px 20px;
+        padding: $minds-padding / 2 $minds-padding;
         clear: both;
         font-weight: 400;
         line-height: 1.42857143;
-        color: #333;
         white-space: nowrap;
         text-decoration: none;
+        @include m-theme() {
+          color: themed($m-grey-900);
+        }
       }
       a:hover {
-        color: #262626;
-        background-color: #f5f5f5;
+        @include m-theme() {
+          color: themed($m-grey-950);
+          background-color: themed($m-grey-50);
+        }
       }
 
       &.active {
-        a, a:hover {
-          color: #fff;
-          background-color: #4690D6;
+        a,
+        a:hover {
           outline: 0;
+          @include m-theme() {
+            color: themed($m-white);
+            background-color: themed($m-blue);
+          }
         }
       }
     }
   }
-
 }

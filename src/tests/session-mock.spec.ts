@@ -1,12 +1,13 @@
 /**
  * Created by Nicolas on 10/10/2017.
  */
-import { EventEmitter } from "@angular/core";
+import { EventEmitter } from '@angular/core';
 
-export let sessionMock = new function () {
+export let sessionMock = new (function() {
   this.user = {
     guid: '1000',
     admin: true,
+    is_admin: true,
     plus: false,
     disabled_boost: false,
     username: 'test',
@@ -30,4 +31,4 @@ export let sessionMock = new function () {
   this.login = jasmine.createSpy('login');
 
   this.logout = jasmine.createSpy('logout');
-};
+})();

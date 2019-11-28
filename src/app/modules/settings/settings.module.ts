@@ -9,6 +9,7 @@ import { CommonModule } from '../../common/common.module';
 import { LegacyModule } from '../legacy/legacy.module';
 import { ReportModule } from '../report/report.module';
 import { PaymentsModule } from '../payments/payments.module';
+import { ReferralsModule } from '../wallet/tokens/referrals/referrals.module';
 
 import { SettingsComponent } from './settings.component';
 import { SettingsGeneralComponent } from './general/general.component';
@@ -24,10 +25,13 @@ import { SettingsService } from './settings.service';
 import { SettingsWireComponent } from './wire/wire.component';
 import { WireModule } from '../wire/wire.module';
 import { SettingsP2PMediaComponent } from './p2pmedia/p2pmedia.component';
+import { SettingsBlockedChannelsComponent } from './blocked-channels/blocked-channels.component';
+import { SettingsTiersComponent } from './tiers/tiers.component';
 
-
-const settingsRoutes : Routes = [
-  { path: 'settings', component: SettingsComponent,
+const settingsRoutes: Routes = [
+  {
+    path: 'settings',
+    component: SettingsComponent,
     children: [
       { path: '', redirectTo: 'general', pathMatch: 'full' },
       { path: 'general/:card', component: SettingsGeneralComponent },
@@ -36,13 +40,14 @@ const settingsRoutes : Routes = [
       { path: 'disable', component: SettingsDisableChannelComponent },
       { path: 'twoFactor', component: SettingsTwoFactorComponent },
       { path: 'emails', component: SettingsEmailsComponent },
-      { path: 'billing',  component: SettingsBillingComponent },
-      { path: 'reported-content',  component: SettingsReportedContentComponent },
-      { path: 'p2pmedia',  component: SettingsP2PMediaComponent },
-    ]
-  }
+      { path: 'billing', component: SettingsBillingComponent },
+      { path: 'reported-content', component: SettingsReportedContentComponent },
+      { path: 'p2pmedia', component: SettingsP2PMediaComponent },
+      { path: 'blocked-channels', component: SettingsBlockedChannelsComponent },
+      { path: 'tiers', component: SettingsTiersComponent },
+    ],
+  },
 ];
-
 
 @NgModule({
   imports: [
@@ -57,6 +62,7 @@ const settingsRoutes : Routes = [
     ReportModule,
     PaymentsModule,
     WireModule,
+    ReferralsModule,
   ],
   declarations: [
     SettingsComponent,
@@ -71,15 +77,13 @@ const settingsRoutes : Routes = [
     SettingsReportedContentComponent,
     SettingsWireComponent,
     SettingsP2PMediaComponent,
-    //BillingComponent
+    SettingsBlockedChannelsComponent,
+    SettingsTiersComponent,
   ],
-  providers: [
-    SettingsService,
-  ],
+  providers: [SettingsService],
   exports: [
     SettingsBillingSavedCardsComponent,
-    SettingsBillingSubscriptionsComponent
+    SettingsBillingSubscriptionsComponent,
   ],
 })
-
 export class SettingsModule {}

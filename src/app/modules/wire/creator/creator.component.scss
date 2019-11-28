@@ -7,7 +7,8 @@
   h2 {
     font-weight: 200;
   }
-  h3, h4 {
+  h3,
+  h4 {
     font-weight: 400;
   }
 
@@ -28,7 +29,6 @@
       text-transform: initial;
       margin-left: $minds-padding * 3;
     }
-
   }
 
   h4 {
@@ -43,8 +43,7 @@
     top: -0.15em;
   }
 
-
-  .m-wire--creator--header{
+  .m-wire--creator--header {
     position: relative;
     margin-bottom: 16px;
 
@@ -60,9 +59,11 @@
       justify-content: flex-start;
 
       .ion-icon {
-        color: #4690D6;
         margin-right: $minds-padding;
         font-size: 36px;
+        @include m-theme() {
+          color: themed($m-blue);
+        }
       }
     }
 
@@ -86,6 +87,7 @@
         font-weight: 400;
         margin-bottom: 0;
         padding-left: $minds-margin * 2;
+        padding-right: $minds-padding * 3;
         line-height: 16px;
       }
     }
@@ -127,12 +129,13 @@
     margin-top: $minds-padding * 2;
   }
 
-   .m-wire--creator--amount {
-     display: flex;
-     align-items: center;
-   }
+  .m-wire--creator--amount {
+    display: flex;
+    align-items: center;
+  }
 
-  .m-wire--creator--amount, .m-wire--creator--target {
+  .m-wire--creator--amount,
+  .m-wire--creator--target {
     margin-top: 16px;
     letter-spacing: 2.5px;
     input {
@@ -143,7 +146,6 @@
       text-align: right;
 
       appearance: none;
-      background: rgba(0, 0, 0, 0.15);
       color: inherit;
       font-family: inherit;
       font-size: inherit;
@@ -152,21 +154,29 @@
       border-radius: $minds-padding / 2;
       margin: 0;
       margin-right: 8px;
+      @include m-theme() {
+        background-color: rgba(themed($m-black), 0.15);
+      }
 
       &:focus {
         outline: none;
       }
     }
+
+    .m-wire--creator-wide-input--fixedAmount {
+      margin-right: 0.35em;
+      font-weight: 700;
+    }
   }
 
   .m-wire--creator-selector {
-  
     > li {
       flex-basis: 0;
       flex-grow: 1;
       cursor: pointer;
-  
-      h4, span {
+
+      h4,
+      span {
         margin: 0;
         font-weight: 400;
       }
@@ -175,18 +185,18 @@
         margin: 8px 0 2px !important;
         font-size: 14px;
         font-weight: 400;
-    
+
         > * {
           vertical-align: middle;
         }
-    
+
         .m-tooltip {
           .material-icons {
             font-size: 16px;
             line-height: 1.1;
           }
         }
-    
+
         > span {
           font-weight: bold !important;
           font-size: 18px;
@@ -198,13 +208,18 @@
       .m-wire--creator-selector-type {
         padding: 0;
         margin-bottom: $minds-margin;
-  
+
         > * {
           vertical-align: middle;
           display: inline-block;
         }
         > i {
-          font-size: 42px;
+          font-size: 52px;
+          display: block;
+          margin-left: -12px;
+        }
+        > img {
+          height: 52px;
           display: block;
         }
       }
@@ -213,9 +228,11 @@
         display: block;
         font-size: 12px;
         line-height: 1.1;
-        color: #aaa;
         -webkit-font-smoothing: antialiased;
         text-rendering: optimizeLegibility;
+        @include m-theme() {
+          color: themed($m-grey-200);
+        }
       }
 
       b {
@@ -239,7 +256,9 @@
 
       .m-wire--creator-selector--selected-label {
         font-weight: 400;
-        color: #417cb2;
+        @include m-theme() {
+          color: themed($m-blue);
+        }
       }
 
       .m-wire--creator-selector--description {
@@ -247,7 +266,9 @@
         letter-spacing: 1.5px;
         line-height: 1.3;
         max-width: 300px;
-        color: rgba(0,0,0,0.75);
+        @include m-theme() {
+          color: rgba(themed($m-black), 0.75);
+        }
       }
     }
   }
@@ -314,8 +335,10 @@
     }
 
     .m-wire--creator-toggle--selected {
-      color: #417cb2;
       font-weight: 500;
+      @include m-theme() {
+        color: themed($m-blue);
+      }
     }
 
     b {
@@ -330,25 +353,29 @@
     max-height: 300px;
     font-size: 16px;
     border-radius: 3px;
-    background: rgba(0,0,0,0.15);
     padding: $minds-padding;
     margin-top: $minds-padding * 1.5;
     overflow-y: auto;
     box-sizing: border-box;
+    @include m-theme() {
+      background-color: rgba(themed($m-black), 0.15);
+    }
 
     &:after {
       bottom: 100%;
       left: 95%;
       border: solid transparent;
-      content: " ";
+      content: ' ';
       height: 0;
       width: 0;
       position: absolute;
       pointer-events: none;
-      border-color: rgba(102, 102, 102, 0);
-      border-bottom-color: #ffffff;
       border-width: 8px;
       margin-left: -8px;
+      @include m-theme() {
+        border-color: rgba(themed($m-grey-600), 0);
+        border-bottom-color: themed($m-white);
+      }
     }
 
     .m-wire--creator-autocomplete--result {
@@ -357,10 +384,13 @@
       display: flex;
       justify-content: space-between;
 
-      &:hover, &.m-wire--creator-autocomplete--result-highlight {
-        background: #ffffff;
-        color: #000;
+      &:hover,
+      &.m-wire--creator-autocomplete--result-highlight {
         font-weight: 500;
+        @include m-theme() {
+          color: themed($m-black);
+          background-color: themed($m-white);
+        }
       }
     }
   }
@@ -376,14 +406,16 @@
       appearance: none;
       padding: 8px 32px;
       background: none;
-      border: 1px solid #555;
-      border-radius: 0;
+      //border-radius: 0;
       font-family: inherit;
       font-size: inherit;
       font-weight: inherit;
       text-transform: uppercase;
-      color: #555;
       cursor: pointer;
+      //@include m-theme(){
+      //  border: 1px solid themed($m-grey-700);
+      //  color: themed($m-grey-700);
+      //}
 
       &[disabled] {
         cursor: default;
@@ -396,25 +428,30 @@
       margin-left: $minds-padding;
       font-size: 16px;
 
-      > span, > i {
+      > span,
+      > i {
         vertical-align: middle;
       }
     }
 
     .m-wire--creator--submit-error {
-      color: #ff0000;
       font-size: 12px;
       font-weight: 500;
+      @include m-theme() {
+        color: themed($m-red);
+      }
     }
   }
 
   // Credit Card Input
   .m-wire--creator-payment {
     border: 0;
-    background: rgba(0, 0, 0, 0.1);
     border-radius: 3px;
     max-width: 440px;
     padding: 0px;
+    @include m-theme() {
+      background-color: rgba(themed($m-black), 0.1);
+    }
 
     @media screen and (max-width: $max-mobile) {
       position: static;
@@ -423,22 +460,22 @@
       max-width: initial;
     }
 
-    .mdl-card{
+    .mdl-card {
       background: transparent;
     }
 
-    .m-wire--creator-payment-attached{
+    .m-wire--creator-payment-attached {
       display: flex;
       flex-direction: column;
       justify-content: center;
       text-align: center;
       padding: 16px;
 
-      i{
+      i {
         font-size: 90px;
         cursor: default;
       }
-      span{
+      span {
         padding: 16px 0;
         text-transform: uppercase;
         letter-spacing: 2px;
@@ -450,7 +487,7 @@
       }
     }
 
-    .m-payments--saved-cards{
+    .m-payments--saved-cards {
       padding-bottom: $minds-padding;
 
       .m-payments-saved--title {
@@ -459,71 +496,90 @@
       }
     }
 
-    .m-payments--saved-card-item{
-      background: rgba(255,255,255, 0.5);
-      color: #555;
+    .m-payments--saved-card-item {
       padding: 4px 8px;
       margin: 8px 16px;
+      @include m-theme() {
+        background-color: rgba(themed($m-white), 0.5);
+        color: themed($m-grey-700);
+      }
     }
 
-    input{
-      color: #555;
-      background: rgba(255,255,255, 0.5);
+    input {
       padding: 12px;
       border: 0;
       border-radius: 3px;
-      &::placeholder{
-        color: #888;
+      @include m-theme() {
+        background-color: rgba(themed($m-white), 0.5);
+        color: themed($m-grey-700);
+      }
+      &::placeholder {
+        @include m-theme() {
+          color: themed($m-grey-400);
+        }
       }
     }
-    select{
-      padding:12px;
-      background: rgba(255,255,255, 0.5);
+    select {
+      padding: 12px;
       border: 0;
-      color: #555;
       border-radius: 3px;
+      @include m-theme() {
+        background-color: rgba(themed($m-white), 0.5);
+        color: themed($m-grey-700);
+      }
     }
     .mdl-textfield {
-       padding: 12px 0;
-       label {
-        color: #666;
+      padding: 12px 0;
+      label {
         padding: 0px 12px;
+        @include m-theme() {
+          color: themed($m-grey-600);
+        }
       }
     }
-    .is-focused, .is-dirty{
+    .is-focused,
+    .is-dirty {
       border: 0;
-      label{
-        color: #555;
+      label {
         border: 0;
         top: -8px;
         left: -8px;
-        &::after{
-          border:0;
-          background-color:transparent;
+        @include m-theme() {
+          color: themed($m-grey-700);
+        }
+        &::after {
+          border: 0;
+          background-color: transparent;
         }
       }
     }
     .minds-purchase-vendors {
       margin-bottom: ($minds-padding * 2) !important;
-      color:#555;
+      @include m-theme() {
+        color: themed($m-grey-700);
+      }
     }
-    .m-purchase-card--highlight{
+    .m-purchase-card--highlight {
       font-weight: bold;
     }
-    .m-checkout--secure{
-      color: #666;
+    .m-checkout--secure {
+      @include m-theme() {
+        color: themed($m-grey-600);
+      }
     }
-    button{
+    button {
       padding: 12px;
       -webkit-appearance: none;
       border: 0;
-      background: rgba(0,0,0,0.50);
       font-size: 16px;
       text-transform: uppercase;
-      color: #FFF;
       letter-spacing: 1px;
       border-radius: 3px;
       cursor: pointer;
+      @include m-theme() {
+        color: themed($m-white);
+        background-color: rgba(themed($m-black), 0.5);
+      }
     }
   }
 
@@ -542,31 +598,36 @@
       padding: $minds-padding / 2;
       padding-left: $minds-padding * 2;
 
-      &:hover, &:focus {
+      &:hover,
+      &:focus {
         font-weight: 400;
       }
     }
   }
 
   .mdl-checkbox {
-    $cb-color: rgba(0, 0, 0, 0.15);
-
     .mdl-checkbox__label {
       font-size: inherit;
     }
 
     .mdl-checkbox__box-outline {
-      border-color: $cb-color;
-      background-color: $cb-color;
+      @include m-theme() {
+        background-color: rgba(themed($m-black), 0.15);
+        border-color: rgba(themed($m-black), 0.15);
+      }
     }
 
     &.is-checked .mdl-checkbox__tick-outline {
-      background-color: $cb-color;
       mask: none;
+      @include m-theme() {
+        background-color: rgba(themed($m-black), 0.15);
+      }
     }
 
     .mdl-checkbox__ripple-container .mdl-ripple {
-      background-color: $cb-color;
+      @include m-theme() {
+        background-color: rgba(themed($m-black), 0.15);
+      }
     }
   }
 }
@@ -583,7 +644,7 @@
   max-width: 410px;
 
   > li {
-    opacity: 0.5;
+    //opacity: 0.5;
     padding: ($minds-padding);
     cursor: pointer;
     user-select: none;
@@ -600,8 +661,18 @@
       cursor: default;
     }
 
-    &.m-wire--creator-selector--highlight {
-      opacity: 1;
+    // &.m-wire--creator-selector--highlight {
+    //   opacity: 1;
+    // }
+
+    &:not(.m-wire--creator-selector--highlight) .m-wire--creator-selector-type {
+      > i,
+      h5 > span,
+      img,
+      .m-boost--creator-selector--hoverable,
+      .material-icons {
+        opacity: 0.5;
+      }
     }
 
     .m-wire--creator-selector--cta {
@@ -633,7 +704,8 @@
   cursor: pointer;
   user-select: none;
 
-  > span, > img {
+  > span,
+  > img {
     vertical-align: middle;
   }
 
@@ -669,7 +741,8 @@
     max-width: $min-tablet;
   }
 
-  .mdl-card, .mdl-card__supporting-text {
+  .mdl-card,
+  .mdl-card__supporting-text {
     background: transparent;
     color: inherit;
   }
@@ -680,24 +753,34 @@
   }
 
   .mdl-textfield__label {
-    color: rgba(0, 0, 0, 0.46);
+    @include m-theme() {
+      color: rgba(themed($m-black), 0.46);
+    }
 
     &:after {
-      background-color: #ffffff;
+      @include m-theme() {
+        background-color: themed($m-white);
+      }
     }
   }
 
   .mdl-textfield__input {
-    border-bottom: 1px solid rgba(0, 0, 0, 0.32);
-    color: #ffffff;
     font-family: inherit;
     font-weight: inherit;
+    @include m-theme() {
+      border-bottom: 1px solid rgba(themed($m-black), 0.32);
+      color: themed($m-white);
+    }
   }
 
   .mdl-textfield--floating-label {
-    &.is-focused, &.is-dirty, &.has-placeholder {
+    &.is-focused,
+    &.is-dirty,
+    &.has-placeholder {
       .mdl-textfield__label {
-        color: #ffffff;
+        @include m-theme() {
+          color: themed($m-white);
+        }
       }
     }
   }
@@ -716,13 +799,17 @@
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-    color: #ffffff;
     background: transparent;
-    border: 1px solid #ffffff;
     border-radius: 0;
+    @include m-theme() {
+      color: themed($m-white);
+      border: 1px solid themed($m-white);
+    }
 
     &:focus {
-      outline: 2px solid #ffffff;
+      @include m-theme() {
+        outline: 2px solid themed($m-white);
+      }
     }
   }
 
@@ -746,9 +833,12 @@
     user-select: none;
 
     .m-payments-saved--item {
-      &:hover, &:focus {
-        background: #ffffff;
-        color: #000000;
+      &:hover,
+      &:focus {
+        @include m-theme() {
+          background-color: themed($m-white);
+          color: themed($m-black);
+        }
       }
     }
   }
@@ -756,20 +846,10 @@
 
 // Creator Rewards component
 
-.m-wire--creator-rewards {
-  display: block;
-  //border-left: 1px solid rgba(0, 0, 0, 0.2);
-  //padding: ($minds-padding * 3) 0 ($minds-padding * 3) 60px;
-  color: #555;
-  font-family: inherit;
-  font-weight: 200;
-
-  @media screen and (max-width: $max-mobile) {
-    position: initial;
-    max-width: none;
-    border: none;
-    padding: 0 ($minds-padding * 2);
-    margin: ($minds-padding * 2) 0;
+.m-wire--creator-rewards,
+.m-wireCreator__rewardSelector {
+  @include m-theme() {
+    color: themed($m-grey-700);
   }
 
   .m-wire--creator-rewards--title {
@@ -784,21 +864,22 @@
     font-weight: 400;
     letter-spacing: 0.5px;
     line-height: 1;
-    color: #777;
+    @include m-theme() {
+      color: themed($m-grey-500);
+    }
 
     b {
       font-weight: 400;
     }
   }
 
-  .m-wire--creator-rewards--list {
+  m-wirecreator__rewards {
     //max-width: 360px;
-    display: flex;
-    flex-direction: row;
-    list-style: none;
     margin: 0;
     padding: 0;
-    color: rgba(0, 0, 0, 0.35);
+    @include m-theme() {
+      color: rgba(themed($m-black), 0.35);
+    }
 
     .m-wire--creator-rewards--threshold {
       padding: 8px;
@@ -807,11 +888,15 @@
     }
 
     .m-wire--creator-rewards--above-threshold {
-      color: rgba(0, 0, 0, 0.6);
+      @include m-theme() {
+        color: rgba(themed($m-black), 0.6);
+      }
     }
 
     .m-wire--creator-rewards--best-reward {
-      color: #333;
+      @include m-theme() {
+        color: themed($m-grey-900);
+      }
     }
 
     .m-wire--creator-rewards--amount span {
@@ -821,13 +906,19 @@
       letter-spacing: 2.5px;
     }
 
-    .m-wire--creator-rewards--description p {
-      font-family: 'Roboto';
-      padding: 0;
-      margin: 4px 0;
-      line-height: 1.1;
-      font-size: 12px;
-      font-weight: 400;
+    .m-wire--creator-rewards--description {
+      padding: $minds-padding;
+      > * {
+        display: inline;
+      }
+      p {
+        font-family: 'Roboto', Helvetica, sans-serif;
+        padding: 0;
+        margin: 4px 0;
+        line-height: 1.1;
+        font-size: 12px;
+        font-weight: 400;
+      }
     }
   }
 }
@@ -861,10 +952,12 @@
   .m-wire--creator-wide-input--cost-value {
     flex-grow: 1;
     flex-basis: 0;
-    background: rgba(0, 0, 0, 0.10);
     border-radius: 4px;
     font-weight: bold;
     text-align: right;
+    @include m-theme() {
+      background-color: rgba(themed($m-black), 0.1);
+    }
 
     > span {
       margin: 0 ($minds-padding * 2);
@@ -875,6 +968,13 @@
     margin-left: 1em;
     font-weight: bold;
     letter-spacing: 0.5px;
-    color: #999;
+    @include m-theme() {
+      color: themed($m-grey-300);
+    }
   }
+}
+
+.m-wireCreator__rewardSelector {
+  margin-right: 64px;
+  margin-bottom: 16px;
 }

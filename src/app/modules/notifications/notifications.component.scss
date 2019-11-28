@@ -1,31 +1,34 @@
-@import "defaults";
+@import 'defaults';
 
-minds-notification.mdl-card{
-  width:100%;
-  min-height:0;
-  padding:$minds-padding * 2;
-  margin-bottom:$minds-margin*2;
+minds-notification.mdl-card {
+  width: 100%;
+  min-height: 0;
+  padding: $minds-padding * 2;
+  margin-bottom: $minds-margin * 2;
 
   display: flex;
   flex-direction: row;
 
-  .avatar{
+  .avatar {
     display: flex;
     flex-direction: column;
 
-    img{
+    img {
       border-radius: 50%;
-      max-height:50px;
+      width: 40px;
+      height: 40px;
+      object-fit: cover;
     }
   }
 
-  .body{
-    padding:0 $minds-padding*2;
+  .body {
+    padding: 0 $minds-padding * 2;
 
-
-    a{
-      color:#333;
+    a {
       text-decoration: none;
+      @include m-theme() {
+        color: themed($m-grey-900);
+      }
     }
 
     .pseudo-link {
@@ -33,13 +36,13 @@ minds-notification.mdl-card{
       vertical-align: baseline;
     }
 
-    p{
-      padding:0;
-      margin:0;
+    p {
+      padding: 0;
+      margin: 0;
     }
 
-    .ts{
-      font-size:11px;
+    .ts {
+      font-size: 11px;
     }
   }
 }
@@ -47,7 +50,7 @@ minds-notification.mdl-card{
 minds-notifications {
   .m-notifications--load-new {
     text-transform: uppercase;
-    font-family: 'Roboto';
+    font-family: 'Roboto', Helvetica, sans-serif;
     letter-spacing: 2.5px;
     cursor: pointer;
     text-rendering: optimizeLegibility;
@@ -63,7 +66,6 @@ minds-notifications {
   }
 
   .mdl-tabs__tab {
-
     overflow: visible;
     flex: 1;
 
@@ -71,7 +73,8 @@ minds-notifications {
       display: inline-block;
     }
 
-    .m-icon, .material-icons {
+    .m-icon,
+    .material-icons {
       line-height: 2em;
       margin-left: 0.35em;
       vertical-align: middle;
@@ -101,26 +104,32 @@ minds-notifications {
     }
   }
 
-  .notifications-grid{
+  .notifications-grid {
     // Styles for notifications page list
   }
 }
 
-m-notifications--topbar-toggle{
-  i { cursor: pointer }
-  .counter { cursor: default }
+m-notifications--topbar-toggle {
+  i {
+    cursor: pointer;
+  }
+  .counter {
+    cursor: default;
+  }
 
   .m-notifications--topbar-toggle--icon--active {
     &::after {
-      background: #4690DF;
       border-radius: 50%;
       display: block;
       height: 8px;
       width: 8px;
-      content: "";
+      content: '';
       position: absolute;
       top: -2px;
       right: 2px;
+      @include m-theme() {
+        background-color: themed($m-blue);
+      }
     }
   }
 
@@ -134,7 +143,9 @@ m-notifications--topbar-toggle{
   }
 }
 
-.m-v2-topbar__UserMenu m-notifications--topbar-toggle .m-notifications--topbar-toggle--icon--active::after {
+.m-v2-topbar__UserMenu
+  m-notifications--topbar-toggle
+  .m-notifications--topbar-toggle--icon--active::after {
   top: -12px;
   right: 0px;
 }

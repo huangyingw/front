@@ -1,8 +1,10 @@
-@import "defaults";
+@import 'defaults';
 
 .m-pages {
   font-family: Roboto, Helvetica, Arial, sans-serif;
-  background-color: white;
+  @include m-theme() {
+    background-color: themed($m-white);
+  }
 
   h1 {
     margin-top: 0;
@@ -13,7 +15,10 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  h1, h2, h3, h4 {
+  h1,
+  h2,
+  h3,
+  h4 {
     font-weight: 600;
     letter-spacing: 1.5px;
     text-rendering: optimizeLegibility;
@@ -23,15 +28,18 @@
     margin-bottom: 0.5em;
     font-style: normal;
     letter-spacing: 0.5px;
-    letter-spacing: -.003em;
-    font-family: 'Roboto';
-    color: rgba(0, 0, 0, .84);
+    letter-spacing: -0.003em;
+    font-family: 'Roboto', Helvetica, sans-serif;
     margin-top: 29px;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
+    @include m-theme() {
+      color: rgba(themed($m-black), 0.84);
+    }
   }
 
-  p, li {
+  p,
+  li {
     font-size: 16px;
     font-weight: 400;
     line-height: 1.58;

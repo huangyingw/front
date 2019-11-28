@@ -1,4 +1,3 @@
-
 .m-token--onboarding--rewards-input {
   margin-bottom: 16px;
 
@@ -24,6 +23,9 @@
 
   m-tooltip i {
     font-size: 16px;
+    @include m-theme() {
+      color: themed($m-grey-500);
+    }
   }
 }
 
@@ -39,16 +41,26 @@
 }
 
 .m-token-join--form--error {
-  color: #f44336 !important;
   font-weight: 600;
   padding: 8px;
   margin: 16px 0;
   border-radius: 3px;
   text-transform: capitalize;
+  @include m-theme() {
+    color: themed($m-red) !important;
+  }
 }
 
 .m-token--onboarding--slide {
+  @media (max-width: $max-mobile) {
+    div p {
+      font-size: 12pt;
+    }
+  }
   .m-phone-input {
+    @media (max-width: $max-mobile) {
+      width: 100%;
+    }
     input {
       max-width: 140px;
     }

@@ -8,18 +8,18 @@ import {
   OnDestroy,
   OnInit,
   Output,
-  ViewChild
-} from "@angular/core";
-import { DropdownComponent } from "../dropdown/dropdown.component";
-import { Subject, Subscription } from "rxjs";
-import { debounceTime } from "rxjs/operators";
+  ViewChild,
+} from '@angular/core';
+import { DropdownComponent } from '../dropdown/dropdown.component';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 
 @Component({
   selector: 'm-sort-selector',
   templateUrl: './sort-selector.component.html',
 })
 export class SortSelectorComponent implements OnInit, OnDestroy, AfterViewInit {
-  algorithms: Array<{ id, label, icon?, noPeriod? }> = [
+  algorithms: Array<{ id; label; icon?; noPeriod? }> = [
     {
       id: 'hot',
       label: 'Hot',
@@ -39,7 +39,7 @@ export class SortSelectorComponent implements OnInit, OnDestroy, AfterViewInit {
     },
   ];
 
-  periods: Array<{ id, label }> = [
+  periods: Array<{ id; label }> = [
     {
       id: '12h',
       label: '12h',
@@ -56,13 +56,13 @@ export class SortSelectorComponent implements OnInit, OnDestroy, AfterViewInit {
       id: '30d',
       label: '30d',
     },
-    {
+    /*{
       id: '1y',
       label: '1y'
-    },
+    },*/
   ];
 
-  customTypes: Array<{ id, label, icon? }> = [
+  customTypes: Array<{ id; label; icon? }> = [
     {
       id: 'activities',
       label: 'All',
@@ -97,21 +97,32 @@ export class SortSelectorComponent implements OnInit, OnDestroy, AfterViewInit {
 
   @Input() algorithm: string;
 
+  @Input() allowedAlgorithms: string[] | boolean = true;
+
   @Input() period: string;
+
+  @Input() allowedPeriods: string[] | boolean = true;
 
   @Input() customType: string;
 
-  @Input() labelClass: string = "m--sort-selector-label";
+  @Input() allowedCustomTypes: string[] | boolean = true;
 
-  @Input() hideCustomTypesOnLatest: string[] = [];
+  @Input() labelClass: string = 'm--sort-selector-label';
 
-  @Output() onChange: EventEmitter<{ algorithm, period, customType }> = new EventEmitter<{ algorithm, period, customType }>();
+  @Output() onChange: EventEmitter<{
+    algorithm;
+    period;
+    customType;
+  }> = new EventEmitter<{ algorithm; period; customType }>();
 
-  @ViewChild('algorithmDropdown') algorithmDropdown: DropdownComponent;
+  @ViewChild('algorithmDropdown', { static: false })
+  algorithmDropdown: DropdownComponent;
 
-  @ViewChild('periodDropdown') periodDropdown: DropdownComponent;
+  @ViewChild('periodDropdown', { static: false })
+  periodDropdown: DropdownComponent;
 
-  @ViewChild('customTypeDropdown') customTypeDropdown: DropdownComponent;
+  @ViewChild('customTypeDropdown', { static: false })
+  customTypeDropdown: DropdownComponent;
 
   expandedAlgorithmDropdown: boolean = true;
 
@@ -123,10 +134,7 @@ export class SortSelectorComponent implements OnInit, OnDestroy, AfterViewInit {
 
   protected resizeSubject: Subject<number> = new Subject<number>();
 
-  constructor(
-    protected elementRef: ElementRef
-  ) {
-  }
+  constructor(protected elementRef: ElementRef) {}
 
   @HostListener('window:resize') _widthDetection() {
     this.resizeSubject.next(Date.now());
@@ -149,7 +157,8 @@ export class SortSelectorComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onResize() {
-    const width = this.elementRef &&
+    const width =
+      this.elementRef &&
       this.elementRef.nativeElement &&
       this.elementRef.nativeElement.clientWidth;
 
@@ -161,9 +170,29 @@ export class SortSelectorComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  getAlgorithms() {
+    if (this.allowedAlgorithms === true) {
+      return this.algorithms;
+    } else if (!this.allowedAlgorithms) {
+      return [];
+    }
+
+    return this.algorithms.filter(
+      algorithm => (<string[]>this.allowedAlgorithms).indexOf(algorithm.id) > -1
+    );
+  }
+
+  shouldShowAlgorithms() {
+    return this.getAlgorithms().length > 0;
+  }
+
   setAlgorithm(id: string) {
     if (!this.algorithms.find(algorithm => id === algorithm.id)) {
       console.error('Unknown algorithm');
+      return false;
+    }
+
+    if (this.isDisabled(id)) {
       return false;
     }
 
@@ -187,6 +216,22 @@ export class SortSelectorComponent implements OnInit, OnDestroy, AfterViewInit {
     return currentAlgorithm[prop];
   }
 
+  getPeriods() {
+    if (this.allowedPeriods === true) {
+      return this.periods;
+    } else if (!this.allowedPeriods) {
+      return [];
+    }
+
+    return this.periods.filter(
+      period => (<string[]>this.allowedPeriods).indexOf(period.id) > -1
+    );
+  }
+
+  shouldShowPeriods() {
+    return this.getPeriods().length > 0;
+  }
+
   setPeriod(id: string) {
     if (!this.periods.find(period => id === period.id)) {
       console.error('Unknown period');
@@ -200,7 +245,7 @@ export class SortSelectorComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   getCurrentPeriod() {
-    return this.periods.find(period => this.period === period.id)
+    return this.periods.find(period => this.period === period.id);
   }
 
   getCurrentPeriodLabel() {
@@ -224,11 +269,20 @@ export class SortSelectorComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   getCustomTypes() {
-    if (this.hideCustomTypesOnLatest && this.algorithm === 'latest') {
-      return this.customTypes.filter(customType => this.hideCustomTypesOnLatest.indexOf(customType.id) === -1);
+    if (this.allowedCustomTypes === true) {
+      return this.customTypes;
+    } else if (!this.allowedCustomTypes) {
+      return [];
     }
 
-    return this.customTypes;
+    return this.customTypes.filter(
+      customType =>
+        (<string[]>this.allowedCustomTypes).indexOf(customType.id) > -1
+    );
+  }
+
+  shouldShowCustomTypes() {
+    return this.getCustomTypes().length > 0;
   }
 
   setCustomType(id: string) {
@@ -244,7 +298,9 @@ export class SortSelectorComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   getCurrentCustomType() {
-    return this.customTypes.find(customType => this.customType === customType.id)
+    return this.customTypes.find(
+      customType => this.customType === customType.id
+    );
   }
 
   getCurrentCustomTypeProp(prop: string) {
@@ -277,5 +333,12 @@ export class SortSelectorComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.customTypeDropdown) {
       this.customTypeDropdown.close();
     }
+  }
+
+  isDisabled(id) {
+    return (
+      id != 'top' &&
+      (this.customType === 'channels' || this.customType === 'groups')
+    );
   }
 }

@@ -1,6 +1,19 @@
 ///<reference path="../../../../../node_modules/@types/jasmine/index.d.ts"/>
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { Component, Directive, DebugElement, EventEmitter, Input, Output } from '@angular/core';
+import {
+  async,
+  ComponentFixture,
+  fakeAsync,
+  TestBed,
+  tick,
+} from '@angular/core/testing';
+import {
+  Component,
+  Directive,
+  DebugElement,
+  EventEmitter,
+  Input,
+  Output,
+} from '@angular/core';
 
 import { ReportCreatorComponent } from './creator.component';
 import { Client } from '../../../services/api/client';
@@ -20,36 +33,40 @@ import { sessionMock } from '../../../../tests/session-mock.spec';
 /* tslint:disable */
 @Directive({
   selector: '[mdlRadio]',
-  inputs: ['mdlRadio', 'checked', 'mdlRadioValue']
+  inputs: ['mdlRadio', 'checked', 'mdlRadioValue'],
 })
-export class MdlRadioMock {
-  
-}
+export class MdlRadioMock {}
 
 describe('ReportCreatorComponent', () => {
   let comp: ReportCreatorComponent;
   let fixture: ComponentFixture<ReportCreatorComponent>;
 
   function getSubjectItem(i: number): DebugElement {
-    return fixture.debugElement.queryAll(By.css(`.mdl-radio__button`))[i];
+    return fixture.debugElement.queryAll(
+      By.css(`.m-reportCreatorSubjects__subject`)
+    )[i];
   }
 
   beforeEach(async(() => {
-
     TestBed.configureTestingModule({
-      declarations: [ MaterialMock, MdlRadioMock, MaterialSwitchMock, AbbrPipe, ReportCreatorComponent ], // declare the test component
-      imports: [ FormsModule ],
+      declarations: [
+        MaterialMock,
+        MdlRadioMock,
+        MaterialSwitchMock,
+        AbbrPipe,
+        ReportCreatorComponent,
+      ], // declare the test component
+      imports: [FormsModule],
       providers: [
         { provide: Session, useValue: sessionMock },
         { provide: Client, useValue: clientMock },
-        { provide: OverlayModalService, useValue: overlayModalServiceMock }
-      ]
-    })
-      .compileComponents();  // compile template and css
+        { provide: OverlayModalService, useValue: overlayModalServiceMock },
+      ],
+    }).compileComponents(); // compile template and css
   }));
 
   // synchronous beforeEach
-  beforeEach((done) => {
+  beforeEach(done => {
     jasmine.MAX_PRETTY_PRINT_DEPTH = 10;
     jasmine.clock().uninstall();
     jasmine.clock().install();
@@ -73,111 +90,154 @@ describe('ReportCreatorComponent', () => {
   });
 
   it('should have a title', () => {
-    const title = fixture.debugElement.query(By.css('.m-report-creator--header span'));
+    const title = fixture.debugElement.query(
+      By.css('.m-reportCreator__header h2 span')
+    );
     expect(title).not.toBeNull();
     expect(title.nativeElement.textContent).toContain('Report');
   });
 
-  it('should have a disabled send button and get the guid from the object', () => {
-    const button = fixture.debugElement.query(By.css('.m-report-creator--button-submit'));
+  xit('should have a disabled send button and get the guid from the object', () => {
+    const button = fixture.debugElement.query(
+      By.css('.m-reportCreator__button--submit')
+    );
     expect(button.properties.disabled).toBe(true);
   });
 
-
   it('should have a subject list with the expected items', () => {
-    const subjectList = fixture.debugElement.query(By.css('.m-report-creator--subjects'));
-    const subjectListInputs = fixture.debugElement.queryAll(By.css('.m-report-creator--subjects-subject'));
+    const subjectList = fixture.debugElement.query(
+      By.css('.m-reportCreator__subjects')
+    );
+    const subjectListInputs = fixture.debugElement.queryAll(
+      By.css('.m-reportCreatorSubjects__subject')
+    );
     expect(subjectList).not.toBeNull();
-    expect(subjectListInputs.length).toBe(10);
+    expect(subjectListInputs.length).toBe(12);
   });
 
   it('once a item is clicked submit shouldnt be disabled', () => {
-    const item = getSubjectItem(2);
+    const item = getSubjectItem(3);
     item.nativeElement.click();
     fixture.detectChanges();
-    const button = fixture.debugElement.query(By.css('.m-report-creator--button-submit'));
-    expect(comp.subject).toEqual(3);
+    const button = fixture.debugElement.query(
+      By.css('.m-reportCreator__button--submit')
+    );
+    expect(comp.subject.value).toEqual(4);
     expect(button.properties.disabled).toBe(false);
   });
 
   it('once a item is clicked and is not submittable, next button should appear, and 2nd step', () => {
-    const item = getSubjectItem(9);
+    const item = getSubjectItem(1);
     item.nativeElement.click();
     fixture.detectChanges();
-    const next = fixture.debugElement.query(By.css('.m-report-creator--button-next'));
+    const next = fixture.debugElement.query(
+      By.css('.m-reportCreator__button--next')
+    );
     expect(next).not.toBeNull();
     next.nativeElement.click();
     fixture.detectChanges();
     expect(comp.next).toBe(true);
-    const button = fixture.debugElement.query(By.css('.m-report-creator--button-submit'));
+
+    const subItem = getSubjectItem(1);
+    subItem.nativeElement.click();
+    fixture.detectChanges();
+
+    const button = fixture.debugElement.query(
+      By.css('.m-reportCreator__button--submit')
+    );
     expect(button.properties.disabled).toBe(false);
   });
 
   it('should show success msg after submission, calling with the expected params', fakeAsync(() => {
     clientMock.post.calls.reset();
-    clientMock.response[ `api/v1/entities/report/1` ] = {
-      'status': 'success',
+    clientMock.response[`api/v2/moderation/report`] = {
+      status: 'success',
       done: true,
     };
 
-    const item = getSubjectItem(1);
+    const item = getSubjectItem(3);
     item.nativeElement.click();
     fixture.detectChanges();
-    const button = fixture.debugElement.query(By.css('.m-report-creator--button-submit'));
+    const button = fixture.debugElement.query(
+      By.css('.m-reportCreator__button--submit')
+    );
     expect(button.properties.disabled).toBe(false);
     button.nativeElement.click();
     fixture.detectChanges();
     tick();
-    expect(clientMock.post.calls.mostRecent().args[1]).toEqual({ subject: 2, note: '' });
+    expect(clientMock.post.calls.mostRecent().args[1]).toEqual({
+      entity_guid: '1',
+      reason_code: 4,
+      sub_reason_code: null,
+      note: '',
+    });
     expect(comp.success).toBe(true);
     expect(comp.inProgress).toBe(false);
   }));
 
-  it('should not show succes if param is not true', fakeAsync(() => {
+  it('should not show success if param is not true', fakeAsync(() => {
     clientMock.post.calls.reset();
-    clientMock.response[ `api/v1/entities/report/1` ] = {
-      'status': 'success',
+    clientMock.response[`api/v2/moderation/report`] = {
+      status: 'error',
       done: false,
+      message: 'There was a probem',
     };
 
-    spyOn(window, 'alert').and.callFake(function() { return true });
+    spyOn(window, 'alert').and.callFake(function() {
+      return true;
+    });
 
-    const item = getSubjectItem(1);
+    const item = getSubjectItem(3);
     item.nativeElement.click();
     fixture.detectChanges();
-    const button = fixture.debugElement.query(By.css('.m-report-creator--button-submit'));
+    const button = fixture.debugElement.query(
+      By.css('.m-reportCreator__button--submit')
+    );
     expect(button.properties.disabled).toBe(false);
     button.nativeElement.click();
     fixture.detectChanges();
     tick();
-    expect(clientMock.post.calls.mostRecent().args[1]).toEqual({ subject: 2, note: '' });
+    expect(clientMock.post.calls.mostRecent().args[1]).toEqual({
+      entity_guid: '1',
+      reason_code: 4,
+      sub_reason_code: null,
+      note: '',
+    });
     expect(comp.success).toBe(false);
     expect(comp.inProgress).toBe(false);
   }));
 
   it('should show error msg after submission, calling with the expected params', fakeAsync(() => {
     clientMock.post.calls.reset();
-    clientMock.response[ `api/v1/entities/report/1` ] = {
-      'status': 'error',
+    clientMock.response[`api/v2/moderation/report`] = {
+      status: 'error',
       done: false,
-      'message': 'error message',
+      message: 'error message',
     };
 
-    spyOn(window, 'alert').and.callFake(function() { return true });
+    spyOn(window, 'alert').and.callFake(function() {
+      return true;
+    });
 
-    const item = getSubjectItem(1);
+    const item = getSubjectItem(3);
     item.nativeElement.click();
     fixture.detectChanges();
-    const button = fixture.debugElement.query(By.css('.m-report-creator--button-submit'));
+    const button = fixture.debugElement.query(
+      By.css('.m-reportCreator__button--submit')
+    );
     expect(button.properties.disabled).toBe(false);
     button.nativeElement.click();
     fixture.detectChanges();
     tick();
-    expect(clientMock.post.calls.mostRecent().args[1]).toEqual({ subject: 2, note: '' });
+    expect(clientMock.post.calls.mostRecent().args[1]).toEqual({
+      entity_guid: '1',
+      reason_code: 4,
+      sub_reason_code: null,
+      note: '',
+    });
     expect(comp.success).toBe(false);
     expect(comp.inProgress).toBe(false);
   }));
-
 
   /*it('should show error msg after submission, calling with the expected params', fakeAsync(() => {
     clientMock.post.calls.reset();
@@ -199,16 +259,20 @@ describe('ReportCreatorComponent', () => {
   }));*/
 
   it('once a item is clicked and its copyright one, next button should appear, and 2nd step should allow closing', () => {
-    const item = getSubjectItem(8);
+    const item = getSubjectItem(7);
     item.nativeElement.click();
     fixture.detectChanges();
-    const next = fixture.debugElement.query(By.css('.m-report-creator--button-next'));
+    const next = fixture.debugElement.query(
+      By.css('.m-reportCreator__button--next')
+    );
     expect(next).not.toBeNull();
     next.nativeElement.click();
-    expect(comp.subject).toEqual(10);
+    expect(comp.subject.value).toEqual(10);
     expect(comp.next).toBe(true);
     fixture.detectChanges();
-    const button = fixture.debugElement.query(By.css('.m-report-creator--close button'));
+    const button = fixture.debugElement.query(
+      By.css('.m-reportCreator__button--close')
+    );
     expect(button).not.toBeNull();
     button.nativeElement.click();
   });

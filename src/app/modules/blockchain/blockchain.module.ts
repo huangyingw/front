@@ -22,8 +22,11 @@ import { TokenDistributionEventService } from './contracts/token-distribution-ev
 import { LocalWalletService } from './local-wallet.service';
 import { OffchainPaymentService } from './offchain-payment.service';
 import { Client } from '../../services/api/client';
-import { MarketingModule } from '../marketing/marketing.module';
-import { BlockchainMarketingModule } from './marketing/marketing.module';
+import { GetMetamaskComponent } from './metamask/getmetamask.component';
+import { BlockchainEthModalComponent } from './eth-modal/eth-modal.component';
+import { BlockchainMarketingOnboardComponent } from './token-purchase/onboard.component';
+import { BlockchainPurchaseComponent } from './token-purchase/purchase.component';
+import { ModalsModule } from '../modals/modals.module';
 
 const cryptoRoutes: Routes = [
   {
@@ -31,8 +34,8 @@ const cryptoRoutes: Routes = [
     component: WalletComponent,
     children: [
       { path: '', redirectTo: 'overview', pathMatch: 'full' },
-      { path: 'overview', component: BlockchainConsoleComponent }
-    ]
+      { path: 'overview', component: BlockchainConsoleComponent },
+    ],
   },
 ];
 
@@ -44,7 +47,7 @@ const cryptoRoutes: Routes = [
     FormsModule,
     ReactiveFormsModule,
     FaqModule,
-    //    BlockchainMarketingModule,
+    ModalsModule,
   ],
   declarations: [
     BlockchainConsoleComponent,
@@ -52,58 +55,63 @@ const cryptoRoutes: Routes = [
     BlockchainWalletAddressNoticeComponent,
     TransactionOverlayComponent,
     BlockchainTdeBuyComponent,
+    GetMetamaskComponent,
+    BlockchainEthModalComponent,
+    BlockchainMarketingOnboardComponent,
+    BlockchainPurchaseComponent,
   ],
   providers: [
     TransactionOverlayService,
     {
       provide: LocalWalletService,
       useFactory: LocalWalletService._,
-      deps: [ TransactionOverlayService ]
+      deps: [TransactionOverlayService],
     },
     {
       provide: Web3WalletService,
       useFactory: Web3WalletService._,
-      deps: [ LocalWalletService, TransactionOverlayService ]
+      deps: [LocalWalletService, TransactionOverlayService],
     },
     {
       provide: TokenContractService,
       useFactory: TokenContractService._,
-      deps: [ Web3WalletService, TransactionOverlayService ]
+      deps: [Web3WalletService, TransactionOverlayService],
     },
     {
       provide: WireContractService,
       useFactory: WireContractService._,
-      deps: [ Web3WalletService, TokenContractService ]
+      deps: [Web3WalletService, TokenContractService],
     },
     {
       provide: WithdrawContractService,
       useFactory: WithdrawContractService._,
-      deps: [ Web3WalletService ]
+      deps: [Web3WalletService],
     },
     {
       provide: BoostContractService,
       useFactory: BoostContractService._,
-      deps: [ Web3WalletService, TokenContractService ]
+      deps: [Web3WalletService, TokenContractService],
     },
     {
       provide: TokenDistributionEventService,
       useFactory: TokenDistributionEventService._,
-      deps: [ Web3WalletService ]
+      deps: [Web3WalletService],
     },
     {
       provide: OffchainPaymentService,
       useFactory: OffchainPaymentService._,
-      deps: [ Client ]
-    }
+      deps: [Client],
+    },
   ],
   exports: [
     BlockchainWalletSelector,
     BlockchainWalletAddressNoticeComponent,
     TransactionOverlayComponent,
-    BlockchainTdeBuyComponent
-  ],
-  entryComponents: [
     BlockchainTdeBuyComponent,
-  ]
+    GetMetamaskComponent,
+    BlockchainEthModalComponent,
+    BlockchainPurchaseComponent,
+  ],
+  entryComponents: [BlockchainTdeBuyComponent],
 })
-export class BlockchainModule { }
+export class BlockchainModule {}
