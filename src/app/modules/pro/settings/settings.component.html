@@ -29,6 +29,11 @@
               <a routerLink="/analytics/dashboard/earnings">earnings</a> are
               equivalent to $100 or greater.
             </ng-template>
+            <ng-template ngSwitchCase="subscription">
+              <h4 class="m-shadowboxHeader__subtitle">
+                Manage your subscription
+              </h4>
+            </ng-template>
           </ng-container>
           <a
             class="m-proSettings__upgradeLink"
@@ -526,7 +531,12 @@
                             *ngIf="getPreviewAssetSrc('background')"
                             [src]="getPreviewAssetSrc('background')"
                           />
-                          <span class="m-proSettings__filePreviewOverlay">
+                          <span
+                            class="m-proSettings__filePreviewOverlay"
+                            [ngClass]="{
+                              'm-proSettings__filePreviewOverlay--show': showFilePreviewOverlay()
+                            }"
+                          >
                             <i class="material-icons">cloud_upload</i>
                           </span>
                         </label>
@@ -893,39 +903,53 @@
                   </div>
                 </div>
               </ng-template>
+              <ng-template ngSwitchCase="subscription">
+                <div class="m-shadowboxLayout__body">
+                  <div
+                    class="m-proSettings__tab--subscription"
+                    formGroupName="subscription"
+                  >
+                    <div class="hasValidationRow">
+                      <button
+                        class="m-shadowboxSubmitButton"
+                        type="button"
+                        [disabled]="saveStatus === 'saving'"
+                        [ngClass]="{ saving: saveStatus === 'saving' }"
+                        (click)="cancelSubscription()"
+                      >
+                        <span
+                          class="m-shadowboxSubmitButton__status--unsaved"
+                          i18n
+                        >
+                          Cancel Subscription
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </ng-template>
             </ng-container>
-            <div class="m-shadowboxLayout__footer">
+            <div
+              class="m-shadowboxLayout__footer"
+              *ngIf="activeTab !== 'subscription'"
+            >
               <m-shadowboxSubmitButton
                 [disabled]="
                   !form.valid || form.pristine || saveStatus === 'saving'
                 "
-                [saveStatus]="saveStatus"
+                [saving]="saveStatus === 'saving' ? true : false"
               >
-                <ng-container [ngSwitch]="saveStatus">
-                  <ng-template ngSwitchCase="saving">
-                    <div class="m-shadowboxSubmitButton__status--saving">
-                      <span></span>
-                      <span></span>
-                      <span></span>
-                    </div>
-                  </ng-template>
-                  <ng-template ngSwitchDefault>
-                    <div class="m-shadowboxSubmitButton__status--unsaved">
-                      Save
-                      {{
-                        activeTab === 'general'
-                          ? 'Personal Details'
-                          : (activeTab | titlecase)
-                      }}
-                    </div>
-                  </ng-template>
-                </ng-container>
+                Save
+                {{
+                  activeTab === 'general'
+                    ? 'Personal Details'
+                    : (activeTab | titlecase)
+                }}
               </m-shadowboxSubmitButton>
             </div>
           </form>
         </ng-container>
       </div>
     </m-shadowboxLayout>
-    <m-formToast></m-formToast>
   </ng-container>
 </m-pageLayout>

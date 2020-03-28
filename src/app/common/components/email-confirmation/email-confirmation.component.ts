@@ -4,10 +4,19 @@ import {
   Component,
   OnDestroy,
   OnInit,
+  Inject,
+  PLATFORM_ID,
+  ViewChild,
 } from '@angular/core';
 import { EmailConfirmationService } from './email-confirmation.service';
 import { Session } from '../../../services/session';
 import { Subscription } from 'rxjs';
+import { isPlatformBrowser } from '@angular/common';
+import { ConfigsService } from '../../services/configs.service';
+import { NavigationEnd, Router } from '@angular/router';
+import { Location } from '@angular/common';
+import { filter } from 'rxjs/operators';
+import { AnnouncementComponent } from '../announcements/announcement.component';
 
 /**
  * Component that displays an announcement-like banner
@@ -16,25 +25,35 @@ import { Subscription } from 'rxjs';
  * @see AnnouncementComponent
  */
 @Component({
-  providers: [EmailConfirmationService],
   selector: 'm-emailConfirmation',
   templateUrl: 'email-confirmation.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EmailConfirmationComponent implements OnInit, OnDestroy {
+  readonly fromEmailConfirmation: number;
   sent: boolean = false;
   shouldShow: boolean = false;
   canClose: boolean = false;
 
+  @ViewChild('announcement', { static: false })
+  announcement: AnnouncementComponent;
+
   protected userEmitter$: Subscription;
+  protected routerEvent$: Subscription;
   protected canCloseTimer: number;
-  protected minds = window.Minds;
 
   constructor(
     protected service: EmailConfirmationService,
     protected session: Session,
-    protected cd: ChangeDetectorRef
-  ) {}
+    protected cd: ChangeDetectorRef,
+    @Inject(PLATFORM_ID) protected platformId: Object,
+    configs: ConfigsService,
+    protected router: Router,
+    protected location: Location
+  ) {
+    this.fromEmailConfirmation = configs.get('from_email_confirmation');
+    this.service.setContainer(this);
+  }
 
   ngOnInit(): void {
     this.setShouldShow(this.session.getLoggedInUser());
@@ -42,14 +61,22 @@ export class EmailConfirmationComponent implements OnInit, OnDestroy {
     this.userEmitter$ = this.session.userEmitter.subscribe(user => {
       this.sent = false;
       this.setShouldShow(user);
-
       this.detectChanges();
     });
 
-    this.canCloseTimer = window.setTimeout(() => {
-      this.canClose = true;
-      this.detectChanges();
-    }, 3000);
+    if (isPlatformBrowser(this.platformId)) {
+      this.canCloseTimer = window.setTimeout(() => {
+        this.canClose = true;
+        this.detectChanges();
+      }, 3000);
+    }
+
+    this.routerEvent$ = this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.setShouldShow(this.session.getLoggedInUser());
+        this.detectChanges();
+      });
   }
 
   ngOnDestroy(): void {
@@ -58,6 +85,15 @@ export class EmailConfirmationComponent implements OnInit, OnDestroy {
     if (this.userEmitter$) {
       this.userEmitter$.unsubscribe();
     }
+
+    if (this.routerEvent$) {
+      this.routerEvent$.unsubscribe();
+    }
+  }
+
+  show() {
+    this.announcement.hidden = false;
+    this.detectChanges();
   }
 
   /**
@@ -66,7 +102,8 @@ export class EmailConfirmationComponent implements OnInit, OnDestroy {
    */
   setShouldShow(user): void {
     this.shouldShow =
-      !this.minds.from_email_confirmation &&
+      !(this.location.path().indexOf('/onboarding') === 0) &&
+      !this.fromEmailConfirmation &&
       user &&
       user.email_confirmed === false;
   }

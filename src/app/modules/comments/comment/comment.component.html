@@ -6,10 +6,10 @@
   <div class="minds-avatar" [hovercard]="comment.ownerObj.guid">
     <a [routerLink]="['/', comment.ownerObj.username]">
       <img
-        src="{{ minds.cdn_url }}icon/{{ comment.ownerObj.guid }}/small/{{
+        src="{{ cdnUrl }}icon/{{ comment.ownerObj.guid }}/small/{{
           comment.ownerObj.icontime
         }}"
-        class="mdl-shadow--2dp"
+        class="m-border"
       />
     </a>
   </div>
@@ -27,10 +27,21 @@
           ></m-channel--badges>
         </a>
       </div>
+      <a
+        class="m-mature-text-toggle"
+        (click)="toggleMatureVisibility()"
+        *ngIf="comment.mature"
+        [ngClass]="{ 'm-redButton': showMature }"
+      >
+        <i class="material-icons m-material-icons-inline">explicit</i>
+      </a>
+
       <p
         [hidden]="editing"
-        class="m-commentBubble__message"
+        class="m-commentBubble__message m-mature-message-content"
         [innerHtml]="comment.description || '' | tags"
+        [ngClass]="{ 'm-mature-text': comment.mature && !showMature }"
+        (click)="!showMature ? toggleMatureVisibility() : null"
       ></p>
 
       <p class="m-comment--error-label" *ngIf="error">
@@ -214,7 +225,7 @@
               [src]="comment.custom_data[0].src"
               (error)="
                 comment.custom_data[0].src =
-                  minds.cdn_assets_url + 'assets/logos/medium.png'
+                  cdnAssetsUrl + 'assets/logos/medium.png'
               "
               *ngIf="comment.custom_data"
               class="mdl-shadow--2dp"
@@ -228,7 +239,7 @@
             [src]="comment.custom_data[0].src"
             (error)="
               comment.custom_data[0].src =
-                minds.cdn_assets_url + 'assets/logos/medium.png'
+                cdnAssetsUrl + 'assets/logos/medium.png'
             "
           />
         </div>
