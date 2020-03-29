@@ -1,5 +1,5 @@
 [remote "Minds"]
-    url = https://gitlab.com/Minds/front
+    url = https://gitlab.com/minds/front.git 
     fetch = +refs/heads/*:refs/remotes/Minds/*
 [push]
     remote = origin
