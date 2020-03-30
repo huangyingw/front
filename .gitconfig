@@ -15,5 +15,6 @@
     remote = origin
     merge = refs/heads/dev
 [gdif]
-    ignore = ./package-lock.json
     ignore = *.gdio.diff
+    ignore = ./package-lock.json
+    ignore = install.sh
