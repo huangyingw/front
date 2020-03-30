@@ -16,5 +16,4 @@
     merge = refs/heads/dev
 [gdif]
     ignore = ./package-lock.json
-[gdif]
     ignore = *.gdio.diff
