@@ -1,5 +1,5 @@
 [remote "Minds"]
-    url = https://gitlab.com/Minds/front
+    url = https://gitlab.com/minds/front.git 
     fetch = +refs/heads/*:refs/remotes/Minds/*
 [push]
     remote = origin
@@ -15,6 +15,6 @@
     remote = origin
     merge = refs/heads/dev
 [gdif]
-    ignore = ./package-lock.json
-[gdif]
     ignore = *.gdio.diff
+    ignore = ./package-lock.json
+    ignore = install.sh
