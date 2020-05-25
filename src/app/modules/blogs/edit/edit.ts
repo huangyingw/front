@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { Subscription, Observable } from 'rxjs';
@@ -13,6 +14,7 @@ import { Tag } from '../../hashtags/types/tag';
 import { InMemoryStorageService } from '../../../services/in-memory-storage.service';
 import { DialogService } from '../../../common/services/confirm-leave-dialog.service';
 import { ConfigsService } from '../../../common/services/configs.service';
+import { FormToastService } from '../../../common/services/form-toast.service';
 
 @Component({
   selector: 'minds-blog-edit',
@@ -46,6 +48,7 @@ export class BlogEdit implements OnInit, OnDestroy {
     },
     slug: '',
   };
+  captcha: string;
   banner: any;
   banner_top: number = 0;
   banner_prompt: boolean = false;
@@ -79,7 +82,9 @@ export class BlogEdit implements OnInit, OnDestroy {
     public route: ActivatedRoute,
     protected inMemoryStorageService: InMemoryStorageService,
     private dialogService: DialogService,
-    configs: ConfigsService
+    configs: ConfigsService,
+    private location: Location,
+    private toasterService: FormToastService
   ) {
     this.cdnUrl = configs.get('cdn_url');
 
@@ -102,9 +107,21 @@ export class BlogEdit implements OnInit, OnDestroy {
     );
   }
 
+  canCreateBlog(): boolean {
+    return this.session.getLoggedInUser().email_confirmed;
+  }
+
   ngOnInit() {
     if (!this.session.isLoggedIn()) {
       this.router.navigate(['/login']);
+      return;
+    }
+
+    if (!this.canCreateBlog()) {
+      this.toasterService.error(
+        'Please confirm your email address before creating a blog'
+      );
+      this.location.back();
       return;
     }
 
@@ -166,7 +183,11 @@ export class BlogEdit implements OnInit, OnDestroy {
   }
 
   canDeactivate(): Observable<boolean> | boolean {
-    if (!this.editing || !this.session.getLoggedInUser()) {
+    if (
+      !this.canCreateBlog() ||
+      !this.editing ||
+      !this.session.getLoggedInUser()
+    ) {
       return true;
     }
 
@@ -214,11 +235,16 @@ export class BlogEdit implements OnInit, OnDestroy {
     this.error = '';
 
     if (!this.blog.description) {
-      this.error = 'error:no-description';
+      this.showToastError('error:no-description');
       return false;
     }
     if (!this.blog.title) {
-      this.error = 'error:no-title';
+      this.showToastError('error:no-title');
+      return false;
+    }
+
+    if (!this.captcha) {
+      this.showToastError('Please fill out the captcha');
       return false;
     }
 
@@ -226,7 +252,7 @@ export class BlogEdit implements OnInit, OnDestroy {
   }
 
   posterDateSelectorError(msg) {
-    this.error = msg;
+    this.showToastError(msg);
   }
 
   save() {
@@ -245,6 +271,7 @@ export class BlogEdit implements OnInit, OnDestroy {
       blog.monetization = blog.monetization ? 1 : 0;
       blog.monetized = blog.monetized ? 1 : 0;
       blog.time_created = blog.time_created || Math.floor(Date.now() / 1000);
+      blog.captcha = this.captcha;
 
       this.editing = false;
       this.inProgress = true;
@@ -259,7 +286,7 @@ export class BlogEdit implements OnInit, OnDestroy {
               this.blog.time_created = null;
 
               if (response.status !== 'success') {
-                this.error = response.message;
+                this.showToastError(response.message);
                 return;
               }
               this.router.navigate(
@@ -270,14 +297,14 @@ export class BlogEdit implements OnInit, OnDestroy {
             })
             .catch(e => {
               if (!e.must_verify) {
-                this.error = e.message;
+                this.showToastError(e.message);
               }
               this.canSave = true;
               this.inProgress = false;
             });
         })
         .catch(() => {
-          this.error = 'error:no-banner';
+          this.showToastError('error:no-banner');
           this.inProgress = false;
           this.canSave = true;
         });
@@ -346,6 +373,17 @@ export class BlogEdit implements OnInit, OnDestroy {
       !this.blog.time_published ||
       this.blog.time_published > Math.floor(Date.now() / 1000)
     );
+  }
+
+  showToastError(error: string): void {
+    this.error = error;
+    const errorDisplays: any = {
+      'error:no-title': 'You must provide a title',
+      'error:no-description': 'You must provide a description',
+      'error:no-banner': 'You must upload a banner',
+      'error:gateway-timeout': 'Gateway Time-out',
+    };
+    this.toasterService.error(errorDisplays[error] || error);
   }
 
   /**

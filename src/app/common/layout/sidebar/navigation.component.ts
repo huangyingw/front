@@ -8,6 +8,7 @@ import {
   OnInit,
   PLATFORM_ID,
   ViewChild,
+  OnDestroy,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 
@@ -19,12 +20,14 @@ import { SidebarNavigationService } from './navigation.service';
 import { ConfigsService } from '../../services/configs.service';
 import { MindsUser } from '../../../interfaces/entities';
 import { FeaturesService } from '../../../services/features.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'm-sidebar--navigation',
   templateUrl: 'navigation.component.html',
 })
-export class SidebarNavigationComponent implements OnInit, AfterViewInit {
+export class SidebarNavigationComponent
+  implements OnInit, AfterViewInit, OnDestroy {
   readonly cdnUrl: string;
   readonly cdnAssetsUrl: string;
 
@@ -44,7 +47,9 @@ export class SidebarNavigationComponent implements OnInit, AfterViewInit {
   isOpened: boolean = false;
 
   @HostBinding('hidden')
-  hidden: boolean = true;
+  hidden: boolean = false;
+
+  groupSelectedSubscription: Subscription = null;
 
   constructor(
     public navigation: NavigationService,
@@ -66,16 +71,6 @@ export class SidebarNavigationComponent implements OnInit, AfterViewInit {
       this.onResize();
     }
 
-    this.hidden = !this.session.isLoggedIn();
-    this.service.visibleChange.emit(!this.hidden);
-
-    this.session.isLoggedIn(async is => {
-      if (is) {
-        this.hidden = false;
-        this.service.visibleChange.emit(!this.hidden);
-      }
-    });
-
     if (this.featuresService.has('navigation')) {
       this.settingsLink = '/settings/canary';
     }
@@ -83,6 +78,12 @@ export class SidebarNavigationComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     this.createGroupsSideBar();
+  }
+
+  ngOnDestroy(): void {
+    if (this.groupSelectedSubscription) {
+      this.groupSelectedSubscription.unsubscribe();
+    }
   }
 
   getUser() {
@@ -103,6 +104,13 @@ export class SidebarNavigationComponent implements OnInit, AfterViewInit {
     this.groupsSidebar = this.componentRef.instance;
     this.groupsSidebar.showLabels = true;
     this.groupsSidebar.leftSidebar = true;
+    this.groupSelectedSubscription = this.componentRef.instance.onGroupSelected.subscribe(
+      data => {
+        if (data) {
+          this.toggle();
+        }
+      }
+    );
   }
 
   toggle(): void {

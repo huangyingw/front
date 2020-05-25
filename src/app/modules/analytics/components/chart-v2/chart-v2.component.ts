@@ -24,13 +24,35 @@ export class ChartV2Component implements OnInit, OnDestroy {
   @ViewChild('hoverInfoDiv', { static: true }) hoverInfoDivEl: ElementRef;
   @ViewChild('chartContainer', { static: true }) chartContainer: ElementRef;
 
-  @Input() segments: Array<any>;
   @Input() unit: string = 'number';
   @Input() label: string = '';
 
-  @Input() interval;
   @Input() isMini: boolean = false;
   @Input() showHoverInfo: boolean = true;
+
+  private _segments: Array<any>;
+  @Input() set segments(value: Array<any>) {
+    this._segments = value;
+    if (value) {
+      //redraw chart
+      this.initPlot();
+    }
+  }
+  get segments(): Array<any> {
+    return this._segments;
+  }
+
+  private _interval: string;
+  @Input() set interval(value: string) {
+    this._interval = value;
+    if (value) {
+      //redraw chart
+      this.initPlot();
+    }
+  }
+  get interval(): string {
+    return this._interval;
+  }
 
   @HostBinding('class') get checkIsMini() {
     if (!this.isMini) {
@@ -220,14 +242,14 @@ export class ChartV2Component implements OnInit, OnDestroy {
         tickformat: this.xTickFormat,
         tickmode: 'array',
         tickson: 'labels',
-        tickcolor: this.getColor('m-grey-130'),
+        tickcolor: this.getColor('m-borderColor--secondary'),
         tickangle: -45,
         tickfont: {
-          color: this.getColor('m-grey-130'),
+          color: this.getColor('m-textColor--tertiary'),
         },
         showgrid: false,
         showline: true,
-        linecolor: this.getColor('m-grey-300'),
+        linecolor: this.getColor('m-borderColor--secondary'),
         linewidth: 1,
         zeroline: false,
         fixedrange: true,
@@ -238,12 +260,12 @@ export class ChartV2Component implements OnInit, OnDestroy {
         tickmode: 'array',
         tickson: 'labels',
         showgrid: !this.isMini,
-        gridcolor: this.getColor('m-grey-70'),
+        gridcolor: this.getColor('m-borderColor--primary'),
         zeroline: false,
         visible: true,
         side: 'right',
         tickfont: {
-          color: this.getColor('m-grey-130'),
+          color: this.getColor('m-textColor--tertiary'),
         },
         fixedrange: true,
         automargin: true,

@@ -10,7 +10,7 @@
     >
   </div>
   <div class="m-layout__spacer"></div>
-  <m-discoveryFeeds__settingsButton></m-discoveryFeeds__settingsButton>
+  <m-discovery__settingsButton modalType="feed"></m-discovery__settingsButton>
 </div>
 
 <div class="m-goBack">
@@ -19,19 +19,4 @@
   </a>
 </div>
 
-<div class="m-discoveryFeeds__feed">
-  <m-discovery__feedItem
-    *ngFor="let entity$ of entities$ | async"
-    [entity]="entity$ | async"
-    [allowAutoplayOnScroll]="true"
-    [openComments]="false"
-  ></m-discovery__feedItem>
-
-  <infinite-scroll
-    distance="25%"
-    (load)="loadMore()"
-    [moreData]="hasMoreData$ | async"
-    [inProgress]="inProgress$ | async"
-  >
-  </infinite-scroll>
-</div>
+<m-discovery__feedsList></m-discovery__feedsList>

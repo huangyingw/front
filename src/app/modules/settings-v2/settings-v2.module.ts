@@ -10,6 +10,7 @@ import { LegacyModule } from '../legacy/legacy.module';
 import { ReportModule } from '../report/report.module';
 import { PaymentsModule } from '../payments/payments.module';
 import { WireModule } from '../wire/wire.module';
+import { YoutubeMigrationModule } from '../media/youtube-migration/youtube-migration.module';
 
 import { CanDeactivateGuardService } from '../../services/can-deactivate-guard';
 
@@ -47,6 +48,15 @@ import { SettingsV2ProPayoutsComponent } from './pro/payouts/payouts.component';
 import { SettingsV2ProCancelComponent } from './pro/cancel/cancel.component';
 import { StrikesComponent } from '../report/strikes/strikes.component';
 import { SettingsV2AutoplayVideosComponent } from './account/autoplay-videos/autoplay-videos.component';
+import { YoutubeMigrationService } from '../media/youtube-migration/youtube-migration.service';
+import { YoutubeMigrationConnectComponent } from '../media/youtube-migration/connect/connect.component';
+import { YoutubeMigrationDashboardComponent } from '../media/youtube-migration/dashboard/dashboard.component';
+import { YoutubeMigrationUnmigratedVideosComponent } from '../media/youtube-migration/unmigrated-videos/unmigrated-videos.component';
+import { YoutubeMigrationMigratedVideosComponent } from '../media/youtube-migration/migrated-videos/migrated-videos.component';
+import { YoutubeMigrationConfigComponent } from '../media/youtube-migration/config/config.component';
+import { YoutubeMigrationComponent } from '../media/youtube-migration/youtube-migration.component';
+import { ReferralsV2Module } from './other/referrals/referrals.module';
+import { SettingsV2ReferralsComponent } from './other/referrals/referrals.component';
 
 const SETTINGS_V2_ROUTES: Routes = [
   {
@@ -294,6 +304,15 @@ const SETTINGS_V2_ROUTES: Routes = [
         },
         children: [
           {
+            path: 'referrals',
+            component: SettingsV2ReferralsComponent,
+            data: {
+              title: 'Referrals',
+              description:
+                'If your friend signs up for Minds within 24 hours of clicking the link you shared with them, they’ll be added to your pending referrals. Once they sign up for the rewards program by setting up their Minds wallet, the referral is complete and you’ll both get +1 added to your contribution scores!',
+            },
+          },
+          {
             path: 'reported-content/strikes',
             component: StrikesComponent,
             data: {
@@ -338,6 +357,36 @@ const SETTINGS_V2_ROUTES: Routes = [
               description:
                 'Customize the appearance of your paywalled posts. The below description and preview image is what your subscribers will see on your exclusive posts until they become a supporter.',
             },
+          },
+          {
+            path: 'youtube-migration',
+            component: YoutubeMigrationComponent,
+            data: {
+              title: 'Youtube Migration',
+              standardHeader: false,
+            },
+            children: [
+              { path: 'connect', component: YoutubeMigrationConnectComponent },
+              {
+                path: 'dashboard',
+                component: YoutubeMigrationDashboardComponent,
+                children: [
+                  { path: '', redirectTo: 'available', pathMatch: 'full' },
+                  {
+                    path: 'available',
+                    component: YoutubeMigrationUnmigratedVideosComponent,
+                  },
+                  {
+                    path: 'transferred',
+                    component: YoutubeMigrationMigratedVideosComponent,
+                  },
+                  {
+                    path: 'config',
+                    component: YoutubeMigrationConfigComponent,
+                  },
+                ],
+              },
+            ],
           },
           {
             path: 'deactivate-account',
@@ -385,6 +434,8 @@ const SETTINGS_V2_ROUTES: Routes = [
     SettingsModule,
     WalletV2Module,
     ProModule,
+    YoutubeMigrationModule,
+    ReferralsV2Module,
   ],
   declarations: [
     SettingsV2Component,

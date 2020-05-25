@@ -25,11 +25,13 @@ import { Subscription } from 'rxjs';
 export class SettingsV2Component implements OnInit {
   init: boolean = false;
   secondaryPaneIsMenu: boolean = false;
+  standardHeader: boolean = true;
   menuHeaderId: string = 'account';
   routeData: any;
   newNavigation: boolean = false;
   user: string | null = null;
   onMainNav: boolean = false;
+  hasYoutubeFeature: boolean = false;
 
   protected paramMap$: Subscription;
 
@@ -80,9 +82,20 @@ export class SettingsV2Component implements OnInit {
           label: 'Account Upgrade',
           id: 'account-upgrade',
         },
+        shouldShow: this.shouldShowUpgradesMenu.bind(this),
         items: [
-          { label: 'Upgrade to Pro', id: 'upgrade-to-pro', route: '/pro' },
-          { label: 'Upgrade to Plus', id: 'upgrade-to-plus', route: '/plus' },
+          {
+            label: 'Upgrade to Pro',
+            id: 'upgrade-to-pro',
+            route: '/pro',
+            shouldShow: this.shouldShowProMenuItem.bind(this),
+          },
+          {
+            label: 'Upgrade to Plus',
+            id: 'upgrade-to-plus',
+            route: '/plus',
+            shouldShow: this.shouldShowPlusMenuItem.bind(this),
+          },
         ],
       },
     ],
@@ -182,10 +195,11 @@ export class SettingsV2Component implements OnInit {
     protected session: Session,
     protected settingsService: SettingsV2Service,
     protected proService: ProService,
-    protected formToastService: FormToastService,
+    protected toasterService: FormToastService,
     public featuresService: FeaturesService
   ) {
     this.newNavigation = this.featuresService.has('navigation');
+    this.hasYoutubeFeature = this.featuresService.has('yt-importer');
   }
 
   ngOnInit() {
@@ -196,7 +210,9 @@ export class SettingsV2Component implements OnInit {
     this.user = this.session.getLoggedInUser().username;
 
     if (this.route.snapshot.url.length === 0) {
-      this.router.navigateByUrl('/settings/canary/account?ref=main');
+      this.router.navigateByUrl('/settings/canary/account?ref=main', {
+        skipLocationChange: true,
+      });
     }
 
     this.route.queryParamMap.subscribe(params => {
@@ -221,6 +237,28 @@ export class SettingsV2Component implements OnInit {
       .subscribe(event => {
         this.setSecondaryPane();
       });
+
+    // Conditionally show feature flagged items
+    if (this.hasYoutubeFeature) {
+      const youtubeMenuItem = {
+        header: {
+          label: 'Content Migration',
+          id: 'content-migration',
+        },
+        items: [{ label: 'Youtube', id: 'youtube-migration' }],
+      };
+      this.secondaryMenus.other.splice(2, 0, youtubeMenuItem);
+    }
+    if (this.featuresService.has('settings-referrals')) {
+      const referralsMenuItem = {
+        header: {
+          label: 'Referrals',
+          id: 'referrals',
+        },
+        items: [{ label: 'Referrals', id: 'referrals' }],
+      };
+      this.secondaryMenus.other.splice(0, 0, referralsMenuItem);
+    }
 
     this.setProRoutes();
     this.setSecondaryPane();
@@ -261,8 +299,16 @@ export class SettingsV2Component implements OnInit {
     this.secondaryPaneIsMenu = false;
     let snapshot = this.route.snapshot;
     if (snapshot.firstChild && snapshot.firstChild.data['title']) {
+      // Is not a menu
       snapshot = snapshot.firstChild;
+
+      if ('standardHeader' in snapshot.data) {
+        this.standardHeader = snapshot.data['standardHeader'];
+      } else {
+        this.standardHeader = true;
+      }
     } else {
+      // Is a menu
       if (snapshot.data['isMenu']) {
         this.secondaryPaneIsMenu = snapshot.data['isMenu'];
       }
@@ -278,9 +324,9 @@ export class SettingsV2Component implements OnInit {
     if (elementRef.formSubmitted) {
       elementRef.formSubmitted.subscribe($event => {
         if ($event.formSubmitted) {
-          this.formToastService.success('Changes saved');
+          this.toasterService.success('Changes saved');
         } else {
-          this.formToastService.error($event.error || 'Save error');
+          this.toasterService.error($event.error || 'Save error');
         }
       });
     }
@@ -301,5 +347,17 @@ export class SettingsV2Component implements OnInit {
   // to the relevant secondary menu
   goBack(): void {
     this.router.navigate(['../'], { relativeTo: this.route.firstChild });
+  }
+
+  shouldShowUpgradesMenu(): boolean {
+    return this.shouldShowPlusMenuItem() || this.shouldShowProMenuItem();
+  }
+
+  shouldShowProMenuItem(): boolean {
+    return !this.session.getLoggedInUser().pro;
+  }
+
+  shouldShowPlusMenuItem(): boolean {
+    return !this.session.getLoggedInUser().plus;
   }
 }

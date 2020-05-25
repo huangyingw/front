@@ -169,6 +169,12 @@ import { FriendlyTimePipe } from './pipes/friendlytime.pipe';
 import { SidebarWidgetComponent } from './components/sidebar-widget/sidebar-widget.component';
 import { SidebarNavigationSubnavDirective } from './layout/sidebar/subnav.directive';
 import { OnboardingReminderComponent } from './components/onboarding-reminder/reminder.component';
+import { FeedFilterComponent } from './components/feed-filter/feed-filter.component';
+import { AccordionComponent } from './components/accordion/accordion.component';
+import { AccordionPaneComponent } from './components/accordion/accordion-pane.component';
+import { StickySidebarDirective } from './components/sticky-sidebar/sticky-sidebar.directive';
+import { RemindComposerModalComponent } from '../modules/modals/remind-composer-v2/reminder-composer.component';
+import { LanguageModule } from '../modules/language/language.module';
 
 const routes: Routes = [
   {
@@ -186,6 +192,7 @@ const routes: Routes = [
     ReactiveFormsModule,
     OwlDateTimeModule,
     OwlNativeDateTimeModule,
+    LanguageModule,
     RouterModule.forChild(routes),
   ],
   declarations: [
@@ -316,6 +323,10 @@ const routes: Routes = [
     FriendlyTimePipe,
     SidebarWidgetComponent,
     SidebarNavigationSubnavDirective,
+    FeedFilterComponent,
+    AccordionComponent,
+    AccordionPaneComponent,
+    StickySidebarDirective,
   ],
   exports: [
     MINDS_PIPES,
@@ -443,6 +454,10 @@ const routes: Routes = [
     PageLayoutContainerDirective,
     FriendlyTimePipe,
     SidebarWidgetComponent,
+    FeedFilterComponent,
+    AccordionComponent,
+    AccordionPaneComponent,
+    StickySidebarDirective,
   ],
   providers: [
     SiteService,
@@ -517,6 +532,7 @@ const routes: Routes = [
     NotificationsToasterComponent,
     ReferralsLinksComponent,
     ShareModalComponent,
+    RemindComposerModalComponent,
   ],
 })
 export class CommonModule {}

@@ -1,4 +1,17 @@
 <div class="m-marketing__footer">
+  <div class="m-marketingFooter__columns">
+    <div class="m-marketingFooter__languageBar">
+      <m-language__bar
+        *ngIf="features.has('localization-2020')"
+      ></m-language__bar>
+
+      <div
+        *ngIf="features.has('localization-2020')"
+        class="m-marketing__sep m-marketing__sep--dashed m-marketing__sep--big"
+      ></div>
+    </div>
+  </div>
+  <!--Main body & links-->
   <div class="m-grid m-marketingFooter__columns">
     <div
       class="m-grid__column-4 m-grid__column-12--mobile m-marketingFooter__column m-marketingFooter__brandColumn"
@@ -56,6 +69,12 @@
         <li>
           <a href="https://change.minds.com/" target="_blank" i18n>
             Events
+          </a>
+        </li>
+
+        <li>
+          <a href="https://teespring.com/stores/minds" i18n>
+            Store
           </a>
         </li>
       </ul>
@@ -116,8 +135,8 @@
         </li>
 
         <li>
-          <a href="https://teespring.com/stores/minds" i18n>
-            Store
+          <a routerLink="/youtube-migration" i18n>
+            YouTube Migration
           </a>
         </li>
       </ul>
