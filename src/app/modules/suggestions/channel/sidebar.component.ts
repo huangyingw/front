@@ -17,6 +17,8 @@ export class SuggestionsSidebar {
   readonly cdnUrl: string;
 
   @Input() type: SuggestionEntityTypes = 'user';
+  @Input() plus: boolean = false;
+  // TODOPLUS get plus-specific endpoint
 
   suggestions$: BehaviorSubject<Array<any>> = this.service.suggestions$;
   limit = 12;
@@ -82,12 +84,15 @@ export class SuggestionsSidebar {
   }
 
   get title(): string {
+    if (this.plus && this.type === 'user') {
+      return $localize`:@@SUGGESTIONS__PLUS_CHANNEL__TITLE:Top Minds+ Channels`;
+    }
     switch (this.type) {
       case 'user':
-        return 'Suggested Channels';
+        return $localize`:@@SUGGESTIONS__CHANNEL__TITLE:Suggested Channels`;
         break;
       case 'group':
-        return 'Suggested Groups';
+        return $localize`:@@SUGGESTIONS__GROUP__TITLE:Suggested Groups`;
         break;
     }
   }

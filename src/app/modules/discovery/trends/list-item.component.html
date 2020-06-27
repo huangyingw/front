@@ -1,6 +1,6 @@
 <a
   [routerLink]="
-    trend.guid ? '/discovery/trend/' + trend.guid : '/discovery/search'
+    trend.guid ? parentPath + '/trend/' + trend.guid : parentPath + '/search'
   "
   [queryParams]="{
     q: !trend.guid ? '#' + trend.hashtag : null,
@@ -17,6 +17,11 @@
         }}
       </h4>
       <div class="m-discoveryTrendListItem__supportingText--below">
+        <m-paywallBadge
+          [entity]="entity"
+          accentColor="false"
+          topRightPosition="false"
+        ></m-paywallBadge>
         <span>{{ trend.volume }} channels discussing</span>
         <span>{{ trend.entity.time_created | friendlytime }}</span>
       </div>
@@ -27,8 +32,8 @@
     <div>
       <div class="m-discoveryTrendListItem__supportingText--above">
         <span>
-          <ng-container i18n>Trending</ng-container>
-          <ng-container *ngIf="trend.period <= 24" i18n>
+          <ng-container i18n="@@COMMON__TRENDING">Trending</ng-container>
+          <ng-container *ngIf="trend.period <= 24">
             {{ trend.period }}h
           </ng-container>
         </span>

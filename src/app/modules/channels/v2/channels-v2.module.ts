@@ -36,6 +36,10 @@ import { ChannelListGroupsComponent } from './list/groups.component';
 import { ModalsModule } from '../../modals/modals.module';
 import { DiscoverySharedModule } from '../../discovery/discovery-shared.module';
 import { ChannelActionsBoostComponent } from './actions/boost.component';
+import { ChannelShopBriefWireRewardsComponent } from './shop/brief-wire-rewards.component';
+import { ChannelShopMembershipsComponent } from './shop/memberships/memberships.component';
+import { ChannelShopMembershipsEditComponent } from './shop/memberships/edit.component';
+import { ChannelShopMembershipsSupportTierComponent } from './shop/memberships/support-tier.component';
 
 /**
  * Generally available components
@@ -71,6 +75,10 @@ const INTERNAL_COMPONENTS = [
   ChannelListComponent,
   ChannelListConnectionsComponent,
   ChannelListGroupsComponent,
+  ChannelShopBriefWireRewardsComponent,
+  ChannelShopMembershipsComponent,
+  ChannelShopMembershipsEditComponent,
+  ChannelShopMembershipsSupportTierComponent,
 ];
 
 /**
@@ -95,7 +103,6 @@ const PROVIDERS = [ChannelEditModalService];
   ],
   declarations: [...INTERNAL_COMPONENTS, ...COMPONENTS],
   exports: COMPONENTS,
-  entryComponents: COMPONENTS,
   providers: PROVIDERS,
 })
 export class ChannelsV2Module {}
