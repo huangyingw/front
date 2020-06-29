@@ -16,5 +16,4 @@
     merge = refs/heads/dev
 [gdif]
     ignore = *.gdio.diff
-    ignore = ./package-lock.json
     ignore = install.sh
