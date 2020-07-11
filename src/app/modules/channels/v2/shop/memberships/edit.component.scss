@@ -38,6 +38,10 @@ m-channelShopMemberships__edit {
 
   .m-channelShopMembershipsEdit__labelOnly {
     margin-bottom: 0 !important;
+
+    .m-form__row--label {
+      width: 50%;
+    }
   }
 
   .m-channelShopMembershipsEdit__fieldDisabled {
@@ -58,6 +62,24 @@ m-channelShopMemberships__edit {
 
     input[type='text'] {
       width: 100%;
+    }
+  }
+  .m-form__field--checkbox {
+    m-tooltip {
+      margin-top: -8px;
+      margin-left: 8px;
+      .m-tooltip--bubble {
+        right: 12px;
+      }
+    }
+    @media screen and (max-width: $max-mobile) {
+      label {
+        padding-left: 32px;
+        font-size: 14px;
+      }
+      m-tooltip {
+        margin-left: 6px;
+      }
     }
   }
 }
