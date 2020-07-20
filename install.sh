@@ -4,4 +4,3 @@ SCRIPTPATH=$(dirname "$SCRIPT")
 cd "$SCRIPTPATH"
 
 npm install
-npm audit fix
