@@ -17,6 +17,7 @@ import { FeaturesService } from '../../../services/features.service';
 @Component({
   selector: 'm-youtubeMigration',
   templateUrl: './youtube-migration.component.html',
+  styleUrls: ['youtube-migration.component.ng.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class YoutubeMigrationComponent implements OnInit, OnDestroy {
@@ -38,7 +39,7 @@ export class YoutubeMigrationComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     if (!this.featuresService.has('yt-importer')) {
-      this.router.navigate(['settings/canary/other']);
+      this.router.navigate(['settings/other']);
       return;
     }
 
