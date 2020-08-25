@@ -71,9 +71,11 @@ $min-tablet-pro: 900px;
           }
         }
       }
-      .m-proChannelTopbar__settingsLink {
-        text-align: right;
+      .m-proChannel__settingsLinkWrapper {
         flex-grow: 1;
+        text-align: right;
+      }
+      .m-proChannelTopbar__settingsLink {
         font-size: 15px;
         font-weight: 400;
         color: var(--m-pro--secondary-text-color) !important;
@@ -104,14 +106,6 @@ $min-tablet-pro: 900px;
     .m-proChannel__topbar {
       grid-row: 2 / span 1;
       padding: 16px 8vw;
-
-      minds-avatar {
-        width: 90px;
-        height: 90px;
-        display: inline-flex;
-        align-items: center;
-        cursor: pointer;
-      }
 
       @media screen and (min-width: $max-mobile) and (max-width: $extra-wide-mobile) {
         flex-wrap: wrap;
@@ -273,15 +267,6 @@ $min-tablet-pro: 900px;
       font-weight: bold;
     }
 
-    .m-proChannel__topbar .minds-avatar {
-      margin: 0;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background-position: center;
-      background-size: cover;
-    }
-
     // colors
     a.active,
     a:hover {
@@ -319,6 +304,27 @@ $min-tablet-pro: 900px;
         i.clear {
           display: inline-block !important;
         }
+      }
+    }
+
+    minds-avatar {
+      width: 100px;
+      height: 100px;
+      display: inline-flex;
+      align-items: center;
+      flex-shrink: 0;
+      cursor: pointer;
+
+      &:focus {
+        outline: none;
+      }
+      .minds-avatar {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background-position: center;
+        background-size: cover;
       }
     }
   }
