@@ -23,12 +23,8 @@ m-pageLayout {
       }
     }
     .m-tooltip--bubble {
-      z-index: 99;
+      @include z-index(tooltip);
       font-size: 11px;
-      @include m-theme() {
-        color: themed($m-white);
-        background-color: themed($m-blue);
-      }
     }
   }
 }

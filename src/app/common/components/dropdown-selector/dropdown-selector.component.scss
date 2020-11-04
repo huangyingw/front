@@ -2,9 +2,11 @@ $rounded-top: 3px 3px 0 0;
 $rounded-bottom: 0 0 3px 3px;
 
 m-dropdownSelector {
+  // new stacking context
   position: relative;
+  z-index: 1;
+
   margin: 0 24px 36px 0;
-  z-index: 2;
   display: block;
 }
 .m-dropdownSelector__labelWrapper {
@@ -25,10 +27,6 @@ m-dropdownSelector {
     bottom: 110%;
     left: 0;
     width: 160px;
-    @include m-theme() {
-      color: themed($m-white);
-      background-color: themed($m-blue);
-    }
     > * {
       font-size: 11px;
       font-weight: 300;

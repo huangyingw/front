@@ -2,6 +2,12 @@
   <a [routerLink]="['/', username]">
     <img [src]="avatarUrl" class="m-border" />
   </a>
+  <div
+    *ngIf="minimalMode"
+    class="m-activityOwnerBlock__remindIcon--minimalMode"
+  >
+    <i class="material-icons">repeat</i>
+  </div>
 </div>
 
 <div class="m-activityOwnerBlock__body">
@@ -58,7 +64,7 @@
       <div
         class="m-activityOwnerBlockPermalink__text--visibility"
         *ngIf="
-          service.displayOptions.showVisibiltyState &&
+          service.displayOptions.showVisibilityState &&
           (service.isUnlisted$ | async)
         "
       >

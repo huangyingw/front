@@ -44,8 +44,6 @@
   border: none;
   height: 75px;
   width: 100%;
-  z-index: 9999;
-  transform: translateZ(0);
 
   .m-v3TopbarTop__inner {
     height: 100%;
@@ -127,13 +125,13 @@
           padding: 0 20px;
         }
 
-        @media screen and(max-width: $m-grid-max-mobile) {
+        @media screen and(max-width: $layoutMin2ColWidth) {
           // width: 20px;
           transition: width ease-in-out 0.2s;
           padding: 0;
 
           &.is-focused {
-            // width: 270px;
+            width: 270px;
           }
         }
 
@@ -167,21 +165,6 @@
 
       .mdl-textfield__label {
         display: none;
-      }
-
-      .m-search-bar-suggestions-list {
-        left: 0;
-        right: 0;
-        top: 75px;
-        width: 100%;
-        border-radius: 0;
-        border: 0;
-        box-sizing: content-box;
-        @include m-theme() {
-          box-shadow: none;
-          border-bottom: 1px solid themed($m-borderColor--primary);
-          border-right: 1px solid themed($m-borderColor--primary);
-        }
       }
     }
   }
@@ -450,8 +433,6 @@
   padding: 0;
   border: none;
   min-height: 75px;
-  z-index: 9999;
-  transform: translateZ(0);
   @include m-theme() {
     background-color: themed($m-white);
     border-top: 1px solid themed($m-grey-50);
@@ -477,7 +458,7 @@
     width: 1px;
 
     .m-notifications--toaster {
-      z-index: 500;
+      @include z-index(toast);
       position: relative;
       top: 50px;
       right: 350px;

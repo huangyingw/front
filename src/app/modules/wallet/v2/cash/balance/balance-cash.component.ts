@@ -19,7 +19,8 @@ import {
   SplitBalance,
 } from '../../wallet-v2.service';
 import * as moment from 'moment';
-import { ProService } from '../../../../pro/pro.service';
+import { PlusService } from '../../../../plus/plus.service';
+
 @Component({
   selector: 'm-walletBalance--cash',
   templateUrl: './balance-cash.component.html',
@@ -34,7 +35,7 @@ export class WalletBalanceCashComponent implements OnInit {
   pendingBalance: SplitBalance;
   totalPaidOut: SplitBalance;
   proEarnings: SplitBalance;
-  isPro: boolean = false;
+  isPlus: boolean = false;
   nextPayoutDate = '';
   currency = 'usd';
   init: boolean = false;
@@ -48,14 +49,10 @@ export class WalletBalanceCashComponent implements OnInit {
     protected session: Session,
     protected walletService: WalletV2Service,
     private route: ActivatedRoute,
-    protected proService: ProService
+    protected plusService: PlusService
   ) {}
 
   ngOnInit() {
-    this.nextPayoutDate = moment()
-      .endOf('month')
-      .format('ddd Do MMM');
-
     this.cashWalletSubscription = this.walletService.wallet$
       .pipe(map((wallet: Wallet) => wallet.cash))
       .subscribe((cashWallet: WalletCurrency) => {
@@ -70,7 +67,7 @@ export class WalletBalanceCashComponent implements OnInit {
       }
     );
 
-    this.getPro();
+    this.getPlus();
   }
 
   ngOnDestroy() {
@@ -85,14 +82,28 @@ export class WalletBalanceCashComponent implements OnInit {
     this.pendingBalance = this.cashWallet.stripeDetails.pendingBalanceSplit;
     this.totalPaidOut = this.cashWallet.stripeDetails.totalPaidOutSplit;
     this.currency = this.hasBank ? this.cashWallet.label : 'USD';
+
+    const payoutInterval = this.walletService.stripeDetails.payoutInterval;
+
+    if (payoutInterval === 'daily') {
+      this.nextPayoutDate = moment()
+        .add(1, 'days')
+        .format('ddd Do MMM');
+    } else {
+      this.nextPayoutDate = moment()
+        .endOf('month')
+        .format('ddd Do MMM');
+    }
+
     this.init = true;
     this.detectChanges();
   }
-  async getPro(): Promise<void> {
+
+  async getPlus(): Promise<void> {
     try {
-      this.isPro = await this.proService.isActive();
-      if (this.isPro) {
-        this.getProEarnings();
+      this.isPlus = await this.plusService.isActive();
+      if (this.isPlus) {
+        this.getPlusEarnings();
       }
     } catch (e) {
       console.error(e && e.message);
@@ -100,7 +111,7 @@ export class WalletBalanceCashComponent implements OnInit {
     this.detectChanges();
   }
 
-  async getProEarnings(): Promise<void> {
+  async getPlusEarnings(): Promise<void> {
     try {
       const response: number = await this.walletService.getProEarnings();
       this.proEarnings = this.walletService.splitBalance(response);

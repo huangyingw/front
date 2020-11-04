@@ -8,6 +8,7 @@ import {
   OnInit,
   ViewChild,
   HostBinding,
+  Injector,
 } from '@angular/core';
 import { Subscription, timer } from 'rxjs';
 
@@ -20,6 +21,7 @@ import {
   ACTIVITY_FIXED_HEIGHT_RATIO,
   ACTIVITY_OWNERBLOCK_HEIGHT,
   ACTIVITY_TOOLBAR_HEIGHT,
+  ACTIVITY_GRID_LAYOUT_MAX_HEIGHT,
   ActivityEntity,
   ActivityService,
 } from '../activity.service';
@@ -38,6 +40,12 @@ import {
   trigger,
 } from '@angular/animations';
 import { ScrollAwareVideoPlayerComponent } from '../../../media/components/video-player/scrollaware-player.component';
+import {
+  ActivityModalComponent,
+  ACTIVITY_MODAL_MIN_STAGE_HEIGHT,
+} from '../modal/modal.component';
+import { FeaturesService } from '../../../../services/features.service';
+import { ActivityModalCreatorService } from '../modal/modal-creator.service';
 
 @Component({
   selector: 'm-activity__content',
@@ -69,6 +77,12 @@ export class ActivityContentComponent
   @Input() showPaywall: boolean = false;
   @Input() showPaywallBadge: boolean = false;
 
+  /**
+   * Used in activity modal
+   */
+  @Input() hideText: boolean = false;
+  @Input() hideMedia: boolean = false;
+
   @ViewChild('mediaEl', { read: ElementRef })
   mediaEl: ElementRef;
 
@@ -81,19 +95,18 @@ export class ActivityContentComponent
   @ViewChild(ScrollAwareVideoPlayerComponent) videoPlayer;
 
   maxFixedHeightContent: number = 750 * ACTIVITY_FIXED_HEIGHT_RATIO;
-  get maxMessageHeight(): number {
-    return this.service.displayOptions.fixedHeight ? 130 : 320; // This is actually remind
-  }
 
   activityHeight: number;
   remindWidth: number;
   remindHeight: number;
 
   paywallUnlocked: boolean = false;
+  canonicalUrl: string;
 
   private entitySubscription: Subscription;
   private activityHeightSubscription: Subscription;
   private paywallUnlockedSubscription: Subscription;
+  private canonicalUrlSubscription: Subscription;
 
   readonly siteUrl: string;
   readonly cdnAssetsUrl: string;
@@ -110,7 +123,10 @@ export class ActivityContentComponent
     private el: ElementRef,
     private redirectService: RedirectService,
     private session: Session,
-    configs: ConfigsService
+    configs: ConfigsService,
+    private features: FeaturesService,
+    private injector: Injector,
+    private activityModalCreator: ActivityModalCreatorService
   ) {
     this.siteUrl = configs.get('site_url');
     this.cdnAssetsUrl = configs.get('cdn_assets_url');
@@ -131,6 +147,12 @@ export class ActivityContentComponent
         }
       }
     );
+    this.canonicalUrlSubscription = this.service.canonicalUrl$.subscribe(
+      canonicalUrl => {
+        if (!this.entity) return;
+        this.canonicalUrl = canonicalUrl;
+      }
+    );
     this.activityHeightSubscription = this.service.height$.subscribe(
       (height: number) => {
         this.activityHeight = height;
@@ -145,9 +167,21 @@ export class ActivityContentComponent
         if (this.isVideo) {
           this.videoPlayer.forcePlay();
         }
-        if (this.isRichEmbed && this.entity.entity_guid) {
-          this.redirectService.redirect(this.entity.perma_url);
+        if (this.entity.content_type === 'blog') {
+          this.redirectService.redirect(
+            this.entity.perma_url + '?unlock=' + Date.now()
+          );
         }
+      }
+    );
+
+    this.canonicalUrlSubscription = this.service.canonicalUrl$.subscribe(
+      canonicalUrl => {
+        if (!this.entity) return;
+        /**
+         * Record pageviews
+         */
+        this.canonicalUrl = canonicalUrl;
       }
     );
   }
@@ -163,6 +197,7 @@ export class ActivityContentComponent
     this.entitySubscription.unsubscribe();
     this.activityHeightSubscription.unsubscribe();
     this.paywallUnlockedSubscription.unsubscribe();
+    this.canonicalUrlSubscription.unsubscribe();
   }
 
   get message(): string {
@@ -192,6 +227,14 @@ export class ActivityContentComponent
       this.entity.message !== this.entity.title
       ? this.entity.message
       : '';
+  }
+
+  get hideMediaDescription(): boolean {
+    // Minimal mode hides description if there is already a title
+    return this.service.displayOptions.minimalMode &&
+      this.mediaTitle.length >= 1
+      ? true
+      : false;
   }
 
   get isVideo(): boolean {
@@ -231,7 +274,17 @@ export class ActivityContentComponent
     const originalHeight = parseInt(this.entity.custom_data[0].height || 0);
     const originalWidth = parseInt(this.entity.custom_data[0].width || 0);
 
-    if (!originalHeight || !originalWidth) return null;
+    if (!originalHeight || !originalWidth) {
+      if (this.isModal) {
+        return `${ACTIVITY_MODAL_MIN_STAGE_HEIGHT}px`;
+      } else {
+        return null;
+      }
+    }
+
+    if (this.isModal && originalHeight) {
+      return `${originalHeight}px`;
+    }
 
     const ratio = originalHeight / originalWidth;
 
@@ -282,6 +335,14 @@ export class ActivityContentComponent
     return null;
   }
 
+  get isModal(): boolean {
+    return this.service.displayOptions.isModal;
+  }
+
+  get minimalMode(): boolean {
+    return this.service.displayOptions.minimalMode;
+  }
+
   calculateFixedContentHeight(): void {
     if (!this.service.displayOptions.fixedHeight) {
       return;
@@ -325,13 +386,22 @@ export class ActivityContentComponent
   }
 
   onModalRequested(event: MouseEvent) {
-    if (!this.overlayModal.canOpenInModal()) {
+    if (!this.overlayModal.canOpenInModal() || this.isModal) {
       return;
     }
 
     if (event) {
       event.preventDefault();
       event.stopPropagation();
+    }
+    if (
+      this.service.displayOptions.bypassMediaModal &&
+      this.entity.content_type !== 'image' &&
+      this.entity.content_type !== 'video'
+    ) {
+      // Open new window to media page instead of media modal
+      window.open(this.canonicalUrl, '_blank');
+      return;
     }
 
     if (
@@ -342,18 +412,27 @@ export class ActivityContentComponent
       return; // Don't open modal for minds links
     }
 
-    this.entity.modal_source_url = this.router.url;
-
-    this.overlayModal
-      .create(
-        MediaModalComponent,
-        { entity: this.entity },
-        {
-          class: 'm-overlayModal--media',
-        }
-      )
-      .present();
+    this.activityModalCreator.create(this.entity, this.injector);
   }
 
   onImageError(e: Event): void {}
+
+  get maxMessageHeight(): number {
+    if (this.service.displayOptions.minimalMode) {
+      return ACTIVITY_GRID_LAYOUT_MAX_HEIGHT;
+    } else {
+      const maxMessageHeight = this.service.displayOptions.fixedHeight
+        ? 130
+        : 320;
+      return this.isTextOnly ? this.maxFixedHeightContent : maxMessageHeight;
+    }
+  }
+
+  get maxDescHeight(): number {
+    if (this.service.displayOptions.minimalMode) {
+      return ACTIVITY_GRID_LAYOUT_MAX_HEIGHT;
+    } else {
+      return this.service.displayOptions.fixedHeight ? 80 : 320;
+    }
+  }
 }

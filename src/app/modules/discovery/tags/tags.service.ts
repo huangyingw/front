@@ -11,6 +11,7 @@ export type DiscoveryTag = any;
 export class DiscoveryTagsService {
   tags$: BehaviorSubject<DiscoveryTag[]> = new BehaviorSubject([]);
   trending$: BehaviorSubject<DiscoveryTag[]> = new BehaviorSubject([]);
+  foryou$: BehaviorSubject<DiscoveryTag[]> = new BehaviorSubject([]);
   other$: Observable<DiscoveryTag[]> = combineLatest(
     this.tags$,
     this.trending$
@@ -68,10 +69,25 @@ export class DiscoveryTagsService {
       this.trending$.next(null);
       this.remove$.next([]);
     }
-    const response: any = await this.client.get('api/v3/discovery/tags');
-    this.inProgress$.next(false);
-    this.tags$.next(response.tags);
-    this.trending$.next(response.trending);
+    try {
+      const response: any = await this.client.get('api/v3/discovery/tags');
+      this.tags$.next(response.tags);
+      this.trending$.next(response.trending);
+      this.foryou$.next(
+        response.for_you
+          ? response.for_you.map(tag => {
+              return {
+                value: tag.hashtag,
+                posts_count: tag.volume,
+                selected: tag.selected,
+              };
+            })
+          : response.default
+      );
+    } catch (err) {
+    } finally {
+      this.inProgress$.next(false);
+    }
   }
 
   addTag(tag: DiscoveryTag): void {
@@ -89,6 +105,16 @@ export class DiscoveryTagsService {
 
     this.tags$.next(selected);
     this.remove$.next([...this.remove$.value, tag]);
+  }
+
+  async addSingleTag(tag: DiscoveryTag): Promise<boolean> {
+    this.addTag(tag);
+    return await this.saveTags();
+  }
+
+  async removeSingleTag(tag: DiscoveryTag): Promise<boolean> {
+    this.removeTag(tag);
+    return await this.saveTags();
   }
 
   async saveTags(): Promise<boolean> {

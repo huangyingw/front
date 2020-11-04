@@ -18,7 +18,9 @@ import { TextAreaComponent } from '../text-area/text-area.component';
 import { Router } from '@angular/router';
 import { InMemoryStorageService } from '../../../../services/in-memory-storage.service';
 import { FormToastService } from '../../../../common/services/form-toast.service';
+import { FeaturesService } from '../../../../services/features.service';
 import { ConfigsService } from '../../../../common/services/configs.service';
+import { first } from 'rxjs/operators';
 
 /**
  * Base component for composer. It contains all the parts.
@@ -83,6 +85,7 @@ export class BaseComponent implements AfterViewInit {
     protected cd: ChangeDetectorRef,
     protected injector: Injector,
     protected toasterService: FormToastService,
+    protected featuresService: FeaturesService,
     configs: ConfigsService
   ) {
     this.plusTierUrn = configs.get('plus').support_tier_urn;
@@ -153,6 +156,10 @@ export class BaseComponent implements AfterViewInit {
       this.popup.close();
     }
 
+    if (this.featuresService.has('ckeditor5')) {
+      this.router.navigate(['/blog/v2/edit/new']);
+      return;
+    }
     this.router.navigate(['/blog/edit/new']);
   }
 
@@ -167,7 +174,7 @@ export class BaseComponent implements AfterViewInit {
   /**
    * Ensure Minds+ posts follow the rules
    */
-  meetsPlusPostRequirements(): boolean {
+  async meetsPlusPostRequirements(): Promise<boolean> {
     const mon = this.service.monetization$.getValue();
     const isPlusPost =
       mon && mon.support_tier && mon.support_tier.urn === this.plusTierUrn;
@@ -178,7 +185,12 @@ export class BaseComponent implements AfterViewInit {
 
     // Cannot be an external link
     const richEmbed = this.service.richEmbed$.getValue();
-    if (richEmbed && !this.richEmbedPreview$.getValue().entityGuid) {
+    const messageUrl = await this.service.messageUrl$.pipe(first()).toPromise();
+
+    if (
+      messageUrl ||
+      (richEmbed && !this.richEmbedPreview$.getValue().entityGuid)
+    ) {
       this.toasterService.error('Minds+ posts cannot be external links');
       return false;
     }
@@ -188,6 +200,13 @@ export class BaseComponent implements AfterViewInit {
       this.toasterService.error('Minds+ posts must have at least one hashtag');
       return false;
     }
+
+    // Can not be NSFW
+    if (this.service.nsfw$.getValue().length > 0) {
+      this.toasterService.error('Minds+ posts can not be NSFW');
+      return false;
+    }
+
     return true;
   }
 
@@ -196,7 +215,7 @@ export class BaseComponent implements AfterViewInit {
    * @param event
    */
   async onPost(event: ButtonComponentAction) {
-    if (!this.meetsPlusPostRequirements()) {
+    if (!(await this.meetsPlusPostRequirements())) {
       return;
     }
 
