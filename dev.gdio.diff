@@ -1,3 +1,15 @@
+diff --git a/containers/ci-front/Dockerfile b/containers/ci-front/Dockerfile
+index 5bc8ef983..373eb0f46 100644
+--- ./containers/ci-front/Dockerfile
++++ ./containers/ci-front/Dockerfile
+@@ -1,6 +1,6 @@
+ FROM node:13-alpine
+ 
+-RUN apk add --no-cache \
++RUN apk add  \
+     git \
+     libsass
+ 
 diff --git a/src/assets/icons/play.svg b/src/assets/icons/play.svg
 deleted file mode 100644
 index 973617690..000000000
