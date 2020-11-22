@@ -1,6 +1,6 @@
 FROM node:13-alpine
 
-RUN apk add --no-cache \
+RUN apk add  \
     git \
     libsass
 
