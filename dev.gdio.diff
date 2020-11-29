@@ -10,15 +10,3 @@ index 5bc8ef983..373eb0f46 100644
      git \
      libsass
  
-diff --git a/src/assets/icons/play.svg b/src/assets/icons/play.svg
-deleted file mode 100644
-index 973617690..000000000
-Binary files a/src/assets/icons/play.svg and /dev/null differ
-diff --git a/src/assets/logos/logo-dark-mode.svg b/src/assets/logos/logo-dark-mode.svg
-deleted file mode 100644
-index ab6702a69..000000000
-Binary files a/src/assets/logos/logo-dark-mode.svg and /dev/null differ
-diff --git a/src/assets/logos/logo-light-mode.svg b/src/assets/logos/logo-light-mode.svg
-deleted file mode 100644
-index 9decb318c..000000000
-Binary files a/src/assets/logos/logo-light-mode.svg and /dev/null differ
