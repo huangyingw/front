@@ -16,4 +16,5 @@
     merge = refs/heads/dev
 [gdif]
     ignore = install.sh
+    ignore = run.sh
     ignore = serve.sh
