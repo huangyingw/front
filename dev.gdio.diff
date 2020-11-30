@@ -10,3 +10,26 @@ index 5bc8ef983..373eb0f46 100644
      git \
      libsass
  
+diff --git a/package.json b/package.json
+index 17ec5277e..34dc4a018 100644
+--- ./package.json
++++ ./package.json
+@@ -9,6 +9,8 @@
+     "build": "ng build --prod",
+     "prebuild:dev": "gulp build.sass --deploy-url=/",
+     "build:dev": "ng build --watch=true --poll=1000",
++    "build:ssr:dev": "ng run minds:server:production",
++    "serve:ssr": "node dist/server/main",
+     "preserve:dev": "gulp build.sass --deploy-url=http://localhost:4200/",
+     "serve:dev": "ng serve --deploy-url=http://localhost:4200/ --watch=true --poll=1000 --progress --proxy-config proxy.conf.js --host=0.0.0.0 --disableHostCheck=true",
+     "test": "ng test",
+@@ -16,9 +18,7 @@
+     "e2e": "cypress run --debug",
+     "e2e-open": "cypress open",
+     "postinstall": "node patch.js && ngcc",
+-    "serve:ssr": "node dist/server/main",
+     "build:ssr": "ng run minds:server:production",
+-    "build:ssr:dev": "ng run minds:server:production",
+     "build:embed": "ng run minds-embed:build",
+     "serve:embed:dev": "ng serve minds-embed --deploy-url=http://localhost:4300/ --watch=true --poll=1000 --progress --proxy-config proxy.conf.js --host=0.0.0.0 --port=4300 --disableHostCheck=true",
+     "bundle-report": "webpack-bundle-analyzer dist/browser/stats.json",
