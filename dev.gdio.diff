@@ -11,7 +11,7 @@ index 5bc8ef983..373eb0f46 100644
      libsass
  
 diff --git a/package.json b/package.json
-index 17ec5277e..34dc4a018 100644
+index a09dbcabf..cb37c9b89 100644
 --- ./package.json
 +++ ./package.json
 @@ -9,6 +9,8 @@
