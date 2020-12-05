@@ -41,8 +41,8 @@
         "@bhayward93/ckeditor5-build-minds": "^1.1.7",
         "@ckeditor/ckeditor5-angular": "^1.2.3",
         "@danielmoncada/angular-datetime-picker": "^9.3.1",
-        "@mindsorg/web3modal-angular": "^1.2.10",
         "@gorniv/ngx-universal": "^2.2.2",
+        "@mindsorg/web3modal-angular": "^1.2.10",
         "@nguniversal/builders": "~9.1.1",
         "@nguniversal/common": "~9.1.1",
         "@nguniversal/express-engine": "~9.1.1",
@@ -55,6 +55,7 @@
         "braintree-web": "3.41.0",
         "cookie-parser": "^1.4.4",
         "core-js": "~2.6.2",
+        "crypto-js": "^4.0.0",
         "ethers": "^5.0.18",
         "ethjs": "~0.4.0",
         "ethjs-account": "^0.1.4",
@@ -64,6 +65,7 @@
         "fortmatic": "^2.2.1",
         "global": "^4.3.2",
         "highlight.js": "^10.1.1",
+        "http": "0.0.1-security",
         "macy": "^2.5.1",
         "marked": "^1.1.1",
         "material-design-icons": "~3.0.1",
@@ -131,7 +133,16 @@
         "xmlbuilder2": "^2.1.2"
     },
     "browser": {
-        "crypto": false
+        "fs": false,
+        "path": false,
+        "os": false,
+        "crypto": false,
+        "stream": false,
+        "http": false,
+        "tls": false,
+        "zlib": false,
+        "https": false,
+        "net": false
     },
     "husky": {
         "hooks": {
