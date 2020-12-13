@@ -27,16 +27,17 @@ index 1d74d7f7d..217994630 100644
 diff --git a/containers/live-server-compiler/monitor.sh b/containers/live-server-compiler/monitor.sh
 old mode 100644
 new mode 100755
-index 7a41406d8..23f204c4b
+index 7a41406d8..e51e6b965
 --- ./containers/live-server-compiler/monitor.sh
 +++ ./containers/live-server-compiler/monitor.sh
-@@ -1,5 +1,7 @@
+@@ -1,5 +1,8 @@
  #!/usr/bin/env sh
  set -e
  
 -cd /var/www/Minds/front
 -npx nodemon --delay 3 --watch server.ts --watch dist/en/ --ext js,css,jpg,png,svg,mp4,webp,webm  --exec "/usr/bin/env sh" /build.sh
 +cd /var/www/Minds/front/
++rm -fr node_modules/* 
 +
 +npm i && \
 +    NODE_OPTIONS=--max_old_space_size=5096 npm run build:dev --watch=false
