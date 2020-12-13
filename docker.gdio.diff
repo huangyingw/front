@@ -11,11 +11,16 @@ index 5bc8ef983..373eb0f46 100644
      libsass
  
 diff --git a/containers/live-server-compiler/Dockerfile b/containers/live-server-compiler/Dockerfile
-index 1d74d7f7d..6a6ff1044 100644
+index 1d74d7f7d..dc092ccf1 100644
 --- ./containers/live-server-compiler/Dockerfile
 +++ ./containers/live-server-compiler/Dockerfile
-@@ -2,5 +2,3 @@ FROM node:13-alpine
+@@ -1,6 +1,8 @@
+ FROM node:13-alpine
  
++RUN apk update && apk add bash
++RUN apk update && apk upgrade && \
++        apk add --no-cache bash git openssh
++
  COPY monitor.sh /monitor.sh
  COPY build.sh /build.sh
 -
@@ -23,14 +28,20 @@ index 1d74d7f7d..6a6ff1044 100644
 diff --git a/containers/live-server-compiler/monitor.sh b/containers/live-server-compiler/monitor.sh
 old mode 100644
 new mode 100755
-index 7a41406d8..99dcbb679
+index 7a41406d8..b4a1ff855
 --- ./containers/live-server-compiler/monitor.sh
 +++ ./containers/live-server-compiler/monitor.sh
-@@ -2,4 +2,6 @@
+@@ -1,5 +1,11 @@
+ #!/usr/bin/env sh
  set -e
  
- cd /var/www/Minds/front
+-cd /var/www/Minds/front
 -npx nodemon --delay 3 --watch server.ts --watch dist/en/ --ext js,css,jpg,png,svg,mp4,webp,webm  --exec "/usr/bin/env sh" /build.sh
++cd /var/www/Minds/front/
 +# npx nodemon --delay 3 --watch server.ts --watch dist/en/ --ext js,css,jpg,png,svg,mp4,webp,webm  --exec "/usr/bin/env sh" /build.sh
-+npm rebuild node-sass
-+NODE_OPTIONS=--max_old_space_size=5096 npm run build:dev --watch=false
++# npm rebuild node-sass
++
++# npm rebuild node-sass
++
++npm i && \
++    NODE_OPTIONS=--max_old_space_size=5096 npm run build:dev --watch=false
