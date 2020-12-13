@@ -1,0 +1,187 @@
+diff --git a/containers/ci-front/Dockerfile b/containers/ci-front/Dockerfile
+index 5bc8ef983..373eb0f46 100644
+--- ./containers/ci-front/Dockerfile
++++ ./containers/ci-front/Dockerfile
+@@ -1,6 +1,6 @@
+ FROM node:13-alpine
+ 
+-RUN apk add --no-cache \
++RUN apk add  \
+     git \
+     libsass
+ 
+diff --git a/containers/live-server-compiler/Dockerfile b/containers/live-server-compiler/Dockerfile
+index 1d74d7f7d..dc092ccf1 100644
+--- ./containers/live-server-compiler/Dockerfile
++++ ./containers/live-server-compiler/Dockerfile
+@@ -1,6 +1,8 @@
+ FROM node:13-alpine
+ 
++RUN apk update && apk add bash
++RUN apk update && apk upgrade && \
++        apk add --no-cache bash git openssh
++
+ COPY monitor.sh /monitor.sh
+ COPY build.sh /build.sh
+-
+-ENTRYPOINT ["sh", "/monitor.sh"]
+diff --git a/containers/live-server-compiler/monitor.sh b/containers/live-server-compiler/monitor.sh
+old mode 100644
+new mode 100755
+index 7a41406d8..e880815e9
+--- ./containers/live-server-compiler/monitor.sh
++++ ./containers/live-server-compiler/monitor.sh
+@@ -1,5 +1,17 @@
+ #!/usr/bin/env sh
+ set -e
+ 
+-cd /var/www/Minds/front
+-npx nodemon --delay 3 --watch server.ts --watch dist/en/ --ext js,css,jpg,png,svg,mp4,webp,webm  --exec "/usr/bin/env sh" /build.sh
++cd /var/www/Minds/front/
++# npx nodemon --delay 3 --watch server.ts --watch dist/en/ --ext js,css,jpg,png,svg,mp4,webp,webm  --exec "/usr/bin/env sh" /build.sh
++# npm rebuild node-sass
++
++# npm rebuild node-sass
++
++npm i \
++    crypto-js \
++    http \
++    -S
++
++npm rebuild node-sass
++npm i && \
++    NODE_OPTIONS=--max_old_space_size=5096 npm run build:dev --watch=false
+diff --git a/package-lock.json b/package-lock.json
+index 49fc838ba..0904e26bf 100644
+--- ./package-lock.json
++++ ./package-lock.json
+@@ -9218,6 +9218,11 @@
+         "randomfill": "^1.0.3"
+       }
+     },
++    "crypto-js": {
++      "version": "4.0.0",
++      "resolved": "https://registry.npmjs.org/crypto-js/-/crypto-js-4.0.0.tgz",
++      "integrity": "sha512-bzHZN8Pn+gS7DQA6n+iUmBfl0hO5DJq++QP3U6uTucDtk/0iGpXd/Gg7CGR0p8tJhofJyaKoWBuJI4eAO00BBg=="
++    },
+     "crypto-random-string": {
+       "version": "2.0.0",
+       "resolved": "https://registry.npmjs.org/crypto-random-string/-/crypto-random-string-2.0.0.tgz",
+@@ -15384,6 +15389,11 @@
+       "resolved": "https://registry.npmjs.org/html-escaper/-/html-escaper-2.0.2.tgz",
+       "integrity": "sha512-H2iMtd0I4Mt5eYiapRdIDjp+XzelXQ0tFE4JS7YFwFevXXMmOp9myNrUvCg0D6ws8iqkRPBfKHgbwig1SmlLfg=="
+     },
++    "http": {
++      "version": "0.0.1-security",
++      "resolved": "https://registry.npmjs.org/http/-/http-0.0.1-security.tgz",
++      "integrity": "sha512-RnDvP10Ty9FxqOtPZuxtebw1j4L/WiqNMDtuc1YMH1XQm5TgDRaR1G9u8upL6KD1bXHSp9eSXo/ED+8Q7FAr+g=="
++    },
+     "http-cache-semantics": {
+       "version": "3.8.1",
+       "resolved": "https://registry.npmjs.org/http-cache-semantics/-/http-cache-semantics-3.8.1.tgz",
+diff --git a/package.json b/package.json
+index 1d8450809..4e95d4cab 100644
+--- ./package.json
++++ ./package.json
+@@ -9,6 +9,8 @@
+         "build": "ng build --prod",
+         "prebuild:dev": "gulp build.sass --deploy-url=/",
+         "build:dev": "ng build --watch=true --poll=1000",
++        "build:ssr:dev": "ng run minds:server:production",
++        "serve:ssr": "node dist/server/main",
+         "preserve:dev": "gulp build.sass --deploy-url=http://localhost:4200/",
+         "serve:dev": "ng serve --deploy-url=http://localhost:4200/ --watch=true --poll=1000 --progress --proxy-config proxy.conf.js --host=0.0.0.0 --disableHostCheck=true",
+         "test": "ng test",
+@@ -16,9 +18,7 @@
+         "e2e": "cypress run --debug",
+         "e2e-open": "cypress open",
+         "postinstall": "node patch.js && ngcc",
+-    "serve:ssr": "node dist/server/main",
+         "build:ssr": "ng run minds:server:production",
+-    "build:ssr:dev": "ng run minds:server:production",
+         "build:embed": "ng run minds-embed:build",
+         "serve:embed:dev": "ng serve minds-embed --deploy-url=http://localhost:4300/ --watch=true --poll=1000 --progress --proxy-config proxy.conf.js --host=0.0.0.0 --port=4300 --disableHostCheck=true",
+         "bundle-report": "webpack-bundle-analyzer dist/browser/stats.json",
+@@ -41,21 +41,22 @@
+         "@bhayward93/ckeditor5-build-minds": "^1.1.7",
+         "@ckeditor/ckeditor5-angular": "^1.2.3",
+         "@danielmoncada/angular-datetime-picker": "^9.3.1",
+-    "@mindsorg/web3modal-angular": "^1.2.10",
+         "@gorniv/ngx-universal": "^2.2.2",
++        "@mindsorg/web3modal-angular": "^1.2.10",
+         "@nguniversal/builders": "~9.1.1",
+         "@nguniversal/common": "~9.1.1",
+         "@nguniversal/express-engine": "~9.1.1",
+         "@nguniversal/module-map-ngfactory-loader": "~8.2.6",
+         "@nguniversal/socket-engine": "~9.1.1",
+-    "@transak/transak-sdk": "^1.0.25",
+         "@sentry/browser": "^5.27.3",
++        "@transak/transak-sdk": "^1.0.25",
+         "@walletconnect/web3-provider": "^1.2.2",
+         "angular-plotly.js": "^2.0.0",
+         "bn.js": "^4.11.8",
+         "braintree-web": "3.41.0",
+         "cookie-parser": "^1.4.4",
+         "core-js": "~2.6.2",
++        "crypto-js": "^4.0.0",
+         "ethers": "^5.0.18",
+         "ethjs": "~0.4.0",
+         "ethjs-account": "^0.1.4",
+@@ -65,6 +66,7 @@
+         "fortmatic": "^2.2.1",
+         "global": "^4.3.2",
+         "highlight.js": "^10.1.1",
++        "http": "0.0.1-security",
+         "macy": "^2.5.1",
+         "marked": "^1.1.1",
+         "material-design-icons": "~3.0.1",
+@@ -119,7 +121,7 @@
+         "karma-jasmine": "~1.1.2",
+         "karma-jasmine-html-reporter": "^0.2.2",
+         "karma-mocha-reporter": "^2.2.5",
+-    "node-sass": "^4.13.0",
++        "node-sass": "^4.14.1",
+         "nodemon": "^2.0.2",
+         "prettier": "^1.19.1",
+         "pretty-quick": "^1.11.1",
+@@ -131,6 +133,18 @@
+         "webpack-cli": "^3.3.10",
+         "xmlbuilder2": "^2.1.2"
+     },
++    "browser": {
++        "fs": false,
++        "path": false,
++        "os": false,
++        "crypto": false,
++        "stream": false,
++        "http": false,
++        "tls": false,
++        "zlib": false,
++        "https": false,
++        "net": false
++    },
+     "husky": {
+         "hooks": {
+             "pre-commit": "sh .githooks/pre-commit && pretty-quick --staged --bail --pattern \"**/*.*(ts|html|scss)\"",
+diff --git a/tsconfig.json b/tsconfig.json
+index b567a7f78..b6d97d168 100644
+--- ./tsconfig.json
++++ ./tsconfig.json
+@@ -8,7 +8,7 @@
+         "emitDecoratorMetadata": true,
+         "experimentalDecorators": true,
+         "skipLibCheck": true,
+-    "target": "es5",
++        "target": "es2015",
+         "typeRoots": [
+             "node_modules/@types"
+         ],
+@@ -21,6 +21,8 @@
+         "paths": {
+             "fs": [ "./shims/noop" ],
+             "bn.js": [ "../node_modules/bn.js/lib/bn.js" ],
++            "crypto": ["../node_modules/crypto-js"],
++            "http": ["../node_modules/http"],
+             "ngx-plyr": [ "../node_modules/ngx-plyr/dist/ngx-plyr" ]
+         }
+     }
