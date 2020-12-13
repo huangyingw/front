@@ -1,0 +1,36 @@
+diff --git a/containers/ci-front/Dockerfile b/containers/ci-front/Dockerfile
+index 5bc8ef983..373eb0f46 100644
+--- ./containers/ci-front/Dockerfile
++++ ./containers/ci-front/Dockerfile
+@@ -1,6 +1,6 @@
+ FROM node:13-alpine
+ 
+-RUN apk add --no-cache \
++RUN apk add  \
+     git \
+     libsass
+ 
+diff --git a/containers/live-server-compiler/Dockerfile b/containers/live-server-compiler/Dockerfile
+index 1d74d7f7d..6a6ff1044 100644
+--- ./containers/live-server-compiler/Dockerfile
++++ ./containers/live-server-compiler/Dockerfile
+@@ -2,5 +2,3 @@ FROM node:13-alpine
+ 
+ COPY monitor.sh /monitor.sh
+ COPY build.sh /build.sh
+-
+-ENTRYPOINT ["sh", "/monitor.sh"]
+diff --git a/containers/live-server-compiler/monitor.sh b/containers/live-server-compiler/monitor.sh
+old mode 100644
+new mode 100755
+index 7a41406d8..99dcbb679
+--- ./containers/live-server-compiler/monitor.sh
++++ ./containers/live-server-compiler/monitor.sh
+@@ -2,4 +2,6 @@
+ set -e
+ 
+ cd /var/www/Minds/front
+-npx nodemon --delay 3 --watch server.ts --watch dist/en/ --ext js,css,jpg,png,svg,mp4,webp,webm  --exec "/usr/bin/env sh" /build.sh
++# npx nodemon --delay 3 --watch server.ts --watch dist/en/ --ext js,css,jpg,png,svg,mp4,webp,webm  --exec "/usr/bin/env sh" /build.sh
++npm rebuild node-sass
++NODE_OPTIONS=--max_old_space_size=5096 npm run build:dev --watch=false
