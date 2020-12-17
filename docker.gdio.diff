@@ -11,19 +11,18 @@ index 5bc8ef983..373eb0f46 100644
      libsass
  
 diff --git a/containers/live-server-compiler/Dockerfile b/containers/live-server-compiler/Dockerfile
-index 1d74d7f7d..84d6f0eb9 100644
+index 1d74d7f7d..559d84d1d 100644
 --- ./containers/live-server-compiler/Dockerfile
 +++ ./containers/live-server-compiler/Dockerfile
 @@ -1,6 +1,10 @@
--FROM node:13-alpine
-+FROM node:15-alpine
-+
+ FROM node:13-alpine
+ 
 +RUN apk update && apk upgrade && \
 +        apk add bash git openssh
 +
 +RUN apk add make gcc g++ python && \
 +    npm install --production --silent
- 
++
  COPY monitor.sh /monitor.sh
  COPY build.sh /build.sh
 -
