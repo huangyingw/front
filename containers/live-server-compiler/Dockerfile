@@ -1,4 +1,4 @@
-FROM node:15-alpine
+FROM node:13-alpine
 
 RUN apk update && apk upgrade && \
         apk add bash git openssh
