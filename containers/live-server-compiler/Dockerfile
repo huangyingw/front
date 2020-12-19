@@ -2,6 +2,7 @@ FROM node:13-alpine
 
 RUN apk update && apk upgrade && \
         apk add bash git openssh make gcc g++ python && \
+        npm install -g npm && \
         npm install --production --silent
 
 COPY monitor.sh /monitor.sh
