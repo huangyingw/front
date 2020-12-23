@@ -9,16 +9,16 @@
         "build": "ng build --prod",
         "prebuild:dev": "gulp build.sass --deploy-url=/",
         "build:dev": "ng build --watch=true --poll=1000",
-        "build:ssr:dev": "ng run minds:server:production",
-        "serve:ssr": "node dist/server/main",
         "preserve:dev": "gulp build.sass --deploy-url=http://localhost:4200/",
         "serve:dev": "ng serve --deploy-url=http://localhost:4200/ --watch=true --poll=1000 --progress --proxy-config proxy.conf.js --host=0.0.0.0 --disableHostCheck=true",
-        "test": "ng test",
+        "test": "ng test --source-map=false",
         "lint": "ng lint",
         "e2e": "cypress run --debug",
         "e2e-open": "cypress open",
         "postinstall": "node patch.js && ngcc",
+        "serve:ssr": "node dist/server/main",
         "build:ssr": "ng run minds:server:production",
+        "build:ssr:dev": "ng run minds:server:production",
         "build:embed": "ng run minds-embed:build",
         "serve:embed:dev": "ng serve minds-embed --deploy-url=http://localhost:4300/ --watch=true --poll=1000 --progress --proxy-config proxy.conf.js --host=0.0.0.0 --port=4300 --disableHostCheck=true",
         "bundle-report": "webpack-bundle-analyzer dist/browser/stats.json",
@@ -48,6 +48,7 @@
         "@nguniversal/express-engine": "~9.1.1",
         "@nguniversal/module-map-ngfactory-loader": "~8.2.6",
         "@nguniversal/socket-engine": "~9.1.1",
+        "@transak/transak-sdk": "^1.0.25",
         "@sentry/browser": "^5.27.3",
         "@walletconnect/web3-provider": "^1.2.2",
         "angular-plotly.js": "^2.0.0",
@@ -146,10 +147,10 @@
         "https": false,
         "net": false
     },
-  "husky": {
-    "hooks": {
-      "pre-commit": "sh .githooks/pre-commit && pretty-quick --staged --bail --pattern \"**/*.*(ts|html|scss)\"",
-      "post-commit": "sh .githooks/post-commit"
+    "husky": {
+        "hooks": {
+            "pre-commit": "sh .githooks/pre-commit && pretty-quick --staged --bail --pattern \"**/*.*(ts|html|scss)\"",
+            "post-commit": "sh .githooks/post-commit"
+        }
     }
-}
 }
