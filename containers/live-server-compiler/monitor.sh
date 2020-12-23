@@ -12,6 +12,9 @@ npm i \
     http \
     -S
 
+npm i @angular/common
+npm i @types/node
+npm install stream timers --save
 npm rebuild node-sass
 npm i && \
     NODE_OPTIONS=--max_old_space_size=5096 npm run build:dev --watch=false
