@@ -11,10 +11,10 @@ index 5bc8ef983..373eb0f46 100644
      libsass
  
 diff --git a/package-lock.json b/package-lock.json
-index dab9e3576..5b43cd759 100644
+index 49fc838ba..0904e26bf 100644
 --- ./package-lock.json
 +++ ./package-lock.json
-@@ -9208,6 +9208,11 @@
+@@ -9218,6 +9218,11 @@
          "randomfill": "^1.0.3"
        }
      },
@@ -26,7 +26,7 @@ index dab9e3576..5b43cd759 100644
      "crypto-random-string": {
        "version": "2.0.0",
        "resolved": "https://registry.npmjs.org/crypto-random-string/-/crypto-random-string-2.0.0.tgz",
-@@ -15374,6 +15379,11 @@
+@@ -15384,6 +15389,11 @@
        "resolved": "https://registry.npmjs.org/html-escaper/-/html-escaper-2.0.2.tgz",
        "integrity": "sha512-H2iMtd0I4Mt5eYiapRdIDjp+XzelXQ0tFE4JS7YFwFevXXMmOp9myNrUvCg0D6ws8iqkRPBfKHgbwig1SmlLfg=="
      },
@@ -39,10 +39,10 @@ index dab9e3576..5b43cd759 100644
        "version": "3.8.1",
        "resolved": "https://registry.npmjs.org/http-cache-semantics/-/http-cache-semantics-3.8.1.tgz",
 diff --git a/package.json b/package.json
-index a09dbcabf..f2a3e5aaa 100644
+index 19993ec79..88863a046 100644
 --- ./package.json
 +++ ./package.json
-@@ -9,6 +9,8 @@
+@@ -9,16 +9,16 @@
          "build": "ng build --prod",
          "prebuild:dev": "gulp build.sass --deploy-url=/",
          "build:dev": "ng build --watch=true --poll=1000",
@@ -50,8 +50,9 @@ index a09dbcabf..f2a3e5aaa 100644
 +        "serve:ssr": "node dist/server/main",
          "preserve:dev": "gulp build.sass --deploy-url=http://localhost:4200/",
          "serve:dev": "ng serve --deploy-url=http://localhost:4200/ --watch=true --poll=1000 --progress --proxy-config proxy.conf.js --host=0.0.0.0 --disableHostCheck=true",
-         "test": "ng test",
-@@ -16,9 +18,7 @@
+-    "test": "ng test --source-map=false",
++        "test": "ng test",
+         "lint": "ng lint",
          "e2e": "cypress run --debug",
          "e2e-open": "cypress open",
          "postinstall": "node patch.js && ngcc",
@@ -61,7 +62,7 @@ index a09dbcabf..f2a3e5aaa 100644
          "build:embed": "ng run minds-embed:build",
          "serve:embed:dev": "ng serve minds-embed --deploy-url=http://localhost:4300/ --watch=true --poll=1000 --progress --proxy-config proxy.conf.js --host=0.0.0.0 --port=4300 --disableHostCheck=true",
          "bundle-report": "webpack-bundle-analyzer dist/browser/stats.json",
-@@ -41,8 +41,8 @@
+@@ -41,14 +41,13 @@
          "@bhayward93/ckeditor5-build-minds": "^1.1.7",
          "@ckeditor/ckeditor5-angular": "^1.2.3",
          "@danielmoncada/angular-datetime-picker": "^9.3.1",
@@ -71,7 +72,13 @@ index a09dbcabf..f2a3e5aaa 100644
          "@nguniversal/builders": "~9.1.1",
          "@nguniversal/common": "~9.1.1",
          "@nguniversal/express-engine": "~9.1.1",
-@@ -55,6 +55,7 @@
+         "@nguniversal/module-map-ngfactory-loader": "~8.2.6",
+         "@nguniversal/socket-engine": "~9.1.1",
+-    "@transak/transak-sdk": "^1.0.25",
+         "@sentry/browser": "^5.27.3",
+         "@walletconnect/web3-provider": "^1.2.2",
+         "angular-plotly.js": "^2.0.0",
+@@ -56,6 +55,7 @@
          "braintree-web": "3.41.0",
          "cookie-parser": "^1.4.4",
          "core-js": "~2.6.2",
@@ -79,7 +86,7 @@ index a09dbcabf..f2a3e5aaa 100644
          "ethers": "^5.0.18",
          "ethjs": "~0.4.0",
          "ethjs-account": "^0.1.4",
-@@ -64,6 +65,7 @@
+@@ -65,6 +65,7 @@
          "fortmatic": "^2.2.1",
          "global": "^4.3.2",
          "highlight.js": "^10.1.1",
@@ -87,7 +94,26 @@ index a09dbcabf..f2a3e5aaa 100644
          "macy": "^2.5.1",
          "marked": "^1.1.1",
          "material-design-icons": "~3.0.1",
-@@ -130,6 +132,18 @@
+@@ -81,7 +82,9 @@
+         "rxjs": "~6.6.0",
+         "socket.io-client": "^2.2.0",
+         "squarelink": "^1.1.4",
++        "stream": "0.0.2",
+         "textarea-caret": "^3.1.0",
++        "timers": "^0.1.1",
+         "tslib": "~1.13.0",
+         "walletlink": "^2.0.2",
+         "webpack-node-externals": "^1.7.2",
+@@ -119,7 +122,7 @@
+         "karma-jasmine": "~1.1.2",
+         "karma-jasmine-html-reporter": "^0.2.2",
+         "karma-mocha-reporter": "^2.2.5",
+-    "node-sass": "^4.13.0",
++        "node-sass": "^4.14.1",
+         "nodemon": "^2.0.2",
+         "prettier": "^1.19.1",
+         "pretty-quick": "^1.11.1",
+@@ -131,6 +134,18 @@
          "webpack-cli": "^3.3.10",
          "xmlbuilder2": "^2.1.2"
      },
@@ -103,9 +129,9 @@ index a09dbcabf..f2a3e5aaa 100644
 +        "https": false,
 +        "net": false
 +    },
-     "husky": {
-         "hooks": {
-             "pre-commit": "sh .githooks/pre-commit && pretty-quick --staged --bail --pattern \"**/*.*(ts|html|scss)\"",
+   "husky": {
+     "hooks": {
+       "pre-commit": "sh .githooks/pre-commit && pretty-quick --staged --bail --pattern \"**/*.*(ts|html|scss)\"",
 diff --git a/tsconfig.json b/tsconfig.json
 index b567a7f78..7e46e4739 100644
 --- ./tsconfig.json
