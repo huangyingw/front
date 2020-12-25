@@ -11,29 +11,29 @@ index 5bc8ef983..373eb0f46 100644
      libsass
  
 diff --git a/containers/live-server-compiler/Dockerfile b/containers/live-server-compiler/Dockerfile
-index 1d74d7f7d..559d84d1d 100644
+index 1d74d7f7d..83f1799ec 100644
 --- ./containers/live-server-compiler/Dockerfile
 +++ ./containers/live-server-compiler/Dockerfile
-@@ -1,6 +1,10 @@
- FROM node:13-alpine
+@@ -1,6 +1,8 @@
+-FROM node:13-alpine
++FROM node:15-alpine
  
+-COPY monitor.sh /monitor.sh
+-COPY build.sh /build.sh
 +RUN apk update && apk upgrade && \
 +        apk add bash git openssh
 +
-+RUN apk add make gcc g++ python && \
-+    npm install --production --silent
-+
- COPY monitor.sh /monitor.sh
- COPY build.sh /build.sh
--
++RUN apk add make gcc g++ python
+ 
 -ENTRYPOINT ["sh", "/monitor.sh"]
++COPY monitor.sh /monitor.sh
 diff --git a/containers/live-server-compiler/monitor.sh b/containers/live-server-compiler/monitor.sh
 old mode 100644
 new mode 100755
-index 7a41406d8..e51e6b965
+index 7a41406d8..ea95bb4c3
 --- ./containers/live-server-compiler/monitor.sh
 +++ ./containers/live-server-compiler/monitor.sh
-@@ -1,5 +1,8 @@
+@@ -1,5 +1,9 @@
  #!/usr/bin/env sh
  set -e
  
@@ -41,6 +41,7 @@ index 7a41406d8..e51e6b965
 -npx nodemon --delay 3 --watch server.ts --watch dist/en/ --ext js,css,jpg,png,svg,mp4,webp,webm  --exec "/usr/bin/env sh" /build.sh
 +cd /var/www/Minds/front/
 +rm -fr node_modules/* 
++git checkout package-lock.json
 +
 +npm i && \
 +    NODE_OPTIONS=--max_old_space_size=5096 npm run build:dev --watch=false
