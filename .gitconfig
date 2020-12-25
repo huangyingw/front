@@ -15,6 +15,7 @@
     remote = origin
     merge = refs/heads/dev
 [gdif]
+    ignore = build-front.sh
     ignore = install.sh
     ignore = run.sh
     ignore = serve.sh
