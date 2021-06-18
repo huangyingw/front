@@ -13,6 +13,7 @@ export type ActivityDisplayOptions = {
   showComments: boolean;
   showOnlyCommentsInput: boolean;
   showToolbar: boolean;
+  showInteractions: boolean;
   showBoostMenuOptions: boolean;
   showEditedTag: boolean;
   showVisibilityState: boolean;
@@ -22,6 +23,11 @@ export type ActivityDisplayOptions = {
   isModal: boolean;
   minimalMode: boolean; // For grid layouts
   bypassMediaModal: boolean; // Go to media page instead
+  showPostMenu: boolean; // Can be hidden for things like previews
+  showPinnedBadge: boolean; // show pinned badge if a post is pinned
+  showMetrics?: boolean; // sub counts
+  sidebarMode: boolean; // activity is a sidebar suggestion
+  isFeed: boolean; // is the activity a part of a feed?
 };
 
 export type ActivityEntity = {
@@ -57,6 +63,10 @@ export type ActivityEntity = {
   description?: string; // xml for inline rich-embeds
   excerpt?: string; // for blogs
   remind_deleted?: boolean;
+  pinned?: boolean; // pinned to top of channel
+  subtype?: string;
+  reminds?: number; // count of reminds
+  quotes?: number; // count of quotes
 };
 
 // Constants of blocks
@@ -181,6 +191,17 @@ export class ActivityService {
     })
   );
 
+  /** Only allow downloads of images s */
+  canDownload$: Observable<boolean> = this.entity$.pipe(
+    map((entity: ActivityEntity) => {
+      let contentType = entity.content_type;
+      if (entity.activity_type && entity.activity_type === 'quote') {
+        contentType = getActivityContentType(entity.remind_object, true, true);
+      }
+      return contentType === 'image';
+    })
+  );
+
   /**
    * Only allow translation menu item if there is content to translate
    */
@@ -209,11 +230,20 @@ export class ActivityService {
   isBoost$: Observable<boolean> = this.entity$.pipe();
 
   /**
+   * If the post is a quote this will emit true
+   */
+  isQuote$: Observable<boolean> = this.entity$.pipe(
+    map((entity: ActivityEntity) => {
+      return entity && !!entity.remind_object;
+    })
+  );
+
+  /**
    * If the post is a remind this will emit true
    */
   isRemind$: Observable<boolean> = this.entity$.pipe(
     map((entity: ActivityEntity) => {
-      return entity && !!entity.remind_object;
+      return entity && entity.subtype && entity.subtype === 'remind';
     })
   );
 
@@ -249,15 +279,21 @@ export class ActivityService {
     showComments: true,
     showOnlyCommentsInput: true,
     showToolbar: true,
+    showInteractions: false,
     showBoostMenuOptions: false,
     showEditedTag: false,
     showVisibilityState: false,
     showTranslation: false,
+    showPostMenu: true,
+    showPinnedBadge: true,
+    showMetrics: true,
     fixedHeight: false,
     fixedHeightContainer: false,
     isModal: false,
     minimalMode: false,
     bypassMediaModal: false,
+    sidebarMode: false,
+    isFeed: false,
   };
 
   paywallUnlockedEmitter: EventEmitter<any> = new EventEmitter();
@@ -307,7 +343,9 @@ export class ActivityService {
   private patchForeignEntity(entity): ActivityEntity {
     switch (entity.subtype) {
       case 'image':
-        entity.message = entity.description;
+        if (!entity.message) {
+          entity.message = entity.description;
+        }
         entity.entity_guid = entity.guid;
         entity.custom_type = 'batch';
         entity.custom_data = [
@@ -319,7 +357,9 @@ export class ActivityService {
         ];
         break;
       case 'video':
-        entity.message = entity.description;
+        if (!entity.message) {
+          entity.message = entity.description;
+        }
         entity.custom_type = 'video';
         entity.entity_guid = entity.guid;
         entity.custom_data = {

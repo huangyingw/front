@@ -241,10 +241,6 @@ export class ActivityContentComponent
     return !!this.entity.perma_url && !this.isVideo && !this.isImage;
   }
 
-  get isQuote(): boolean {
-    return this.entity.content_type && this.entity.content_type === 'quote';
-  }
-
   get isBlog(): boolean {
     return this.entity.content_type === 'blog';
   }
@@ -482,6 +478,13 @@ export class ActivityContentComponent
       event.preventDefault();
       event.stopPropagation();
     }
+
+    //if sidebarMode, navigate to canonicalUrl for all content types
+    if (this.service.displayOptions.sidebarMode) {
+      this.router.navigateByUrl(this.canonicalUrl);
+      return;
+    }
+
     if (
       this.service.displayOptions.bypassMediaModal &&
       this.entity.content_type !== 'image' &&
@@ -506,6 +509,16 @@ export class ActivityContentComponent
 
   onTranslate(e: Event): void {
     this.service.displayOptions.showTranslation === false;
+  }
+
+  /**
+   * Gets URL to redirect.
+   * @returns { string } - equals '' if url is not needed.
+   */
+  getRedirectUrl(): string {
+    return this.service.displayOptions.fixedHeight
+      ? `/newsfeed/${this.entity.guid}`
+      : '';
   }
 
   onImageError(e: Event): void {}
